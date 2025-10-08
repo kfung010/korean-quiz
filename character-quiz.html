@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>韩语完整文字测验</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+        
+        header {
+            background: #2c3e50;
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.8;
+        }
+        
+        .quiz-area {
+            padding: 30px;
+        }
+        
+        .question-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .korean-char {
+            font-size: 6rem;
+            margin: 20px 0;
+            color: #2c3e50;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .options-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .option {
+            padding: 18px;
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .option:hover {
+            background: #e9ecef;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .option.correct {
+            background: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+        
+        .option.incorrect {
+            background: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+        
+        .feedback {
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin: 20px 0;
+            min-height: 30px;
+        }
+        
+        .correct-feedback {
+            color: #28a745;
+        }
+        
+        .incorrect-feedback {
+            color: #dc3545;
+        }
+        
+        .next-btn {
+            display: block;
+            width: 200px;
+            margin: 0 auto;
+            padding: 14px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .next-btn:hover {
+            background: #2980b9;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            background: #f8f9fa;
+            padding: 15px;
+            border-top: 1px solid #dee2e6;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+        
+        .explanation {
+            background: #e9f7fe;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+        
+        @media (max-width: 600px) {
+            .korean-char {
+                font-size: 4rem;
+            }
+            
+            .options-container {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🇰🇷 韩语完整文字测验</h1>
+            <div class="subtitle">选择正确的罗马音读音</div>
+        </header>
+        
+        <div class="quiz-area">
+            <div class="question-container">
+                <div class="korean-char" id="koreanChar">한</div>
+            </div>
+            
+            <div class="options-container" id="optionsContainer">
+                <!-- 选项将通过JavaScript动态生成 -->
+            </div>
+            
+            <div class="feedback" id="feedback"></div>
+            
+            <button class="next-btn" id="nextBtn">下一题</button>
+            
+            <div class="explanation" id="explanation">
+                提示：干扰项与正确答案在元音、辅音或收音方面相似
+            </div>
+        </div>
+        
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-value" id="score">0</div>
+                <div class="stat-label">得分</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="correctCount">0</div>
+                <div class="stat-label">正确</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="wrongCount">0</div>
+                <div class="stat-label">错误</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="questionCount">0</div>
+                <div class="stat-label">题目</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 韩语发音数据
+        const koreanSounds = {
+            // 初声（辅音）
+            initials: {
+                'ᄀ': { roman: 'g', type: 'initial' },
+                'ᄁ': { roman: 'kk', type: 'initial' },
+                'ᄂ': { roman: 'n', type: 'initial' },
+                'ᄃ': { roman: 'd', type: 'initial' },
+                'ᄄ': { roman: 'tt', type: 'initial' },
+                'ᄅ': { roman: 'r', type: 'initial' },
+                'ᄆ': { roman: 'm', type: 'initial' },
+                'ᄇ': { roman: 'b', type: 'initial' },
+                'ᄈ': { roman: 'pp', type: 'initial' },
+                'ᄉ': { roman: 's', type: 'initial' },
+                'ᄊ': { roman: 'ss', type: 'initial' },
+                'ᄋ': { roman: '', type: 'initial' },
+                'ᄌ': { roman: 'j', type: 'initial' },
+                'ᄍ': { roman: 'jj', type: 'initial' },
+                'ᄎ': { roman: 'ch', type: 'initial' },
+                'ᄏ': { roman: 'k', type: 'initial' },
+                'ᄐ': { roman: 't', type: 'initial' },
+                'ᄑ': { roman: 'p', type: 'initial' },
+                'ᄒ': { roman: 'h', type: 'initial' }
+            },
+            // 中声（元音）
+            medials: {
+                'ᅡ': { roman: 'a', type: 'medial' },
+                'ᅢ': { roman: 'ae', type: 'medial' },
+                'ᅣ': { roman: 'ya', type: 'medial' },
+                'ᅤ': { roman: 'yae', type: 'medial' },
+                'ᅥ': { roman: 'eo', type: 'medial' },
+                'ᅦ': { roman: 'e', type: 'medial' },
+                'ᅧ': { roman: 'yeo', type: 'medial' },
+                'ᅨ': { roman: 'ye', type: 'medial' },
+                'ᅩ': { roman: 'o', type: 'medial' },
+                'ᅪ': { roman: 'wa', type: 'medial' },
+                'ᅫ': { roman: 'wae', type: 'medial' },
+                'ᅬ': { roman: 'oe', type: 'medial' },
+                'ᅭ': { roman: 'yo', type: 'medial' },
+                'ᅮ': { roman: 'u', type: 'medial' },
+                'ᅯ': { roman: 'wo', type: 'medial' },
+                'ᅰ': { roman: 'we', type: 'medial' },
+                'ᅱ': { roman: 'wi', type: 'medial' },
+                'ᅲ': { roman: 'yu', type: 'medial' },
+                'ᅳ': { roman: 'eu', type: 'medial' },
+                'ᅴ': { roman: 'ui', type: 'medial' },
+                'ᅵ': { roman: 'i', type: 'medial' }
+            },
+            // 终声（收音）
+            finals: {
+                '': { roman: '', type: 'final' },
+                'ᆨ': { roman: 'k', type: 'final' },
+                'ᆩ': { roman: 'k', type: 'final' },
+                'ᆪ': { roman: 'k', type: 'final' },
+                'ᆫ': { roman: 'n', type: 'final' },
+                'ᆬ': { roman: 'n', type: 'final' },
+                'ᆭ': { roman: 'n', type: 'final' },
+                'ᆮ': { roman: 't', type: 'final' },
+                'ᆯ': { roman: 'l', type: 'final' },
+                'ᆰ': { roman: 'k', type: 'final' },
+                'ᆱ': { roman: 'm', type: 'final' },
+                'ᆲ': { roman: 'p', type: 'final' },
+                'ᆳ': { roman: 'l', type: 'final' },
+                'ᆴ': { roman: 'l', type: 'final' },
+                'ᆵ': { roman: 'p', type: 'final' },
+                'ᆶ': { roman: 'l', type: 'final' },
+                'ᆷ': { roman: 'm', type: 'final' },
+                'ᆸ': { roman: 'p', type: 'final' },
+                'ᆹ': { roman: 'p', type: 'final' },
+                'ᆺ': { roman: 't', type: 'final' },
+                'ᆻ': { roman: 't', type: 'final' },
+                'ᆼ': { roman: 'ng', type: 'final' },
+                'ᆽ': { roman: 't', type: 'final' },
+                'ᆾ': { roman: 't', type: 'final' },
+                'ᆿ': { roman: 'k', type: 'final' },
+                'ᇀ': { roman: 't', type: 'final' },
+                'ᇁ': { roman: 'p', type: 'final' },
+                'ᇂ': { roman: 't', type: 'final' }
+            }
+        };
+
+        // 常用韩语单字列表（Unicode编码）
+        const commonKoreanChars = [
+            '가', '나', '다', '라', '마', '바', '사', '아', '자', '차', '카', '타', '파', '하',
+            '각', '간', '갈', '감', '강', '개', '거', '건', '걸', '검', '경', '고', '곡', '공', '과', '관', '광', '교', '구', '국', '군', '권', '귀', '규', '그', '근', '글', '금', '기', '길', '김',
+            '나', '낙', '남', '납', '낭', '내', '너', '네', '녀', '년', '논', '놀', '농', '뇌', '누', '눈', '뉴', '느', '늑', '는', '늘', '능', '니', '닉', '닐', '다', '단', '달', '담', '당', '대', '더', '던', '덕', '도', '독', '돈', '동', '두', '둘', '등', '디', '따', '때', '또',
+            '라', '락', '란', '람', '랑', '래', '러', '런', '럽', '레', '로', '록', '론', '롱', '루', '류', '르', '른', '름', '리', '린', '림', '마', '막', '만', '말', '망', '매', '머', '먼', '멀', '메', '모', '목', '몰', '몸', '무', '문', '물', '미', '민', '바', '박', '반', '발', '방', '배', '버', '번', '범', '베', '보', '복', '본', '봉', '부', '분', '불', '비', '빈', '빛',
+            '사', '삭', '산', '살', '삼', '상', '새', '서', '선', '설', '섬', '성', '세', '소', '속', '손', '송', '수', '순', '술', '습', '승', '시', '식', '신', '실', '심', '아', '악', '안', '알', '암', '앙', '애', '야', '약', '양', '어', '억', '언', '얼', '엄', '에', '여', '역', '연', '열', '염', '영', '예', '오', '옥', '온', '올', '옴', '용', '우', '운', '울', '움', '원', '월', '위', '유', '육', '은', '을', '음', '응', '의', '이', '인', '일', '임', '자', '작', '잔', '잡', '장', '재', '저', '전', '절', '점', '정', '제', '조', '족', '존', '종', '좌', '주', '준', '중', '지', '진', '질', '집', '차', '참', '창', '채', '처', '천', '철', '청', '체', '초', '촉', '촌', '최', '추', '축', '춘', '출', '충', '치', '친', '칠', '카', '칸', '칼', '캄', '캐', '컴', '코', '콘', '쿠', '퀴', '크', '키', '타', '탁', '탄', '탈', '탐', '태', '터', '토', '톤', '통', '투', '트', '특', '파', '판', '팔', '패', '퍼', '페', '포', '폭', '표', '푸', '풀', '프', '피', '하', '학', '한', '할', '함', '항', '해', '허', '현', '혈', '혁', '현', '형', '호', '혹', '혼', '홀', '화', '확', '환', '활', '황', '회', '효', '후', '훈', '흥', '히'
+        ];
+
+        // 游戏状态
+        let gameState = {
+            currentChar: '',
+            correctRoman: '',
+            options: [],
+            score: 0,
+            correctCount: 0,
+            wrongCount: 0,
+            questionCount: 0,
+            answered: false
+        };
+
+        // DOM元素
+        const koreanCharEl = document.getElementById('koreanChar');
+        const optionsContainerEl = document.getElementById('optionsContainer');
+        const feedbackEl = document.getElementById('feedback');
+        const nextBtn = document.getElementById('nextBtn');
+        const explanationEl = document.getElementById('explanation');
+        const scoreEl = document.getElementById('score');
+        const correctCountEl = document.getElementById('correctCount');
+        const wrongCountEl = document.getElementById('wrongCount');
+        const questionCountEl = document.getElementById('questionCount');
+
+        // 生成随机韩语文字
+        function getRandomKoreanChar() {
+            return commonKoreanChars[Math.floor(Math.random() * commonKoreanChars.length)];
+        }
+
+        // 分解韩语文字为初声、中声、终声
+        function decomposeHangul(char) {
+            const code = char.charCodeAt(0) - 0xAC00;
+            const finalIndex = code % 28;
+            const medialIndex = ((code - finalIndex) / 28) % 21;
+            const initialIndex = parseInt((code - finalIndex) / 28 / 21);
+            
+            const initial = String.fromCharCode(0x1100 + initialIndex);
+            const medial = String.fromCharCode(0x1161 + medialIndex);
+            const final = finalIndex > 0 ? String.fromCharCode(0x11A7 + finalIndex) : '';
+            
+            return { initial, medial, final };
+        }
+
+        // 获取韩语文字的罗马音
+        function getRomanization(char) {
+            const { initial, medial, final } = decomposeHangul(char);
+            
+            const initialRoman = koreanSounds.initials[initial]?.roman || '';
+            const medialRoman = koreanSounds.medials[medial]?.roman || '';
+            const finalRoman = koreanSounds.finals[final]?.roman || '';
+            
+            return initialRoman + medialRoman + finalRoman;
+        }
+
+        // 生成干扰项
+        function generateDistractors(correctRoman, char) {
+            const { initial, medial, final } = decomposeHangul(char);
+            
+            const distractors = [];
+            const allRomans = new Set();
+            
+            // 收集所有可能的罗马音
+            for (const char of commonKoreanChars) {
+                allRomans.add(getRomanization(char));
+            }
+            
+            const romanArray = Array.from(allRomans);
+            
+            // 生成与正确答案相似的干扰项
+            // 1. 相同初声（辅音）
+            const sameInitialChars = commonKoreanChars.filter(c => {
+                const decomp = decomposeHangul(c);
+                return decomp.initial === initial && c !== char;
+            });
+            
+            if (sameInitialChars.length > 0) {
+                const randomChar = sameInitialChars[Math.floor(Math.random() * sameInitialChars.length)];
+                distractors.push(getRomanization(randomChar));
+            }
+            
+            // 2. 相同中声（元音）
+            const sameMedialChars = commonKoreanChars.filter(c => {
+                const decomp = decomposeHangul(c);
+                return decomp.medial === medial && c !== char;
+            });
+            
+            if (sameMedialChars.length > 0) {
+                const randomChar = sameMedialChars[Math.floor(Math.random() * sameMedialChars.length)];
+                distractors.push(getRomanization(randomChar));
+            }
+            
+            // 3. 相同终声（收音）
+            const sameFinalChars = commonKoreanChars.filter(c => {
+                const decomp = decomposeHangul(c);
+                return decomp.final === final && c !== char;
+            });
+            
+            if (sameFinalChars.length > 0) {
+                const randomChar = sameFinalChars[Math.floor(Math.random() * sameFinalChars.length)];
+                distractors.push(getRomanization(randomChar));
+            }
+            
+            // 如果相似干扰项不足，从所有罗马音中随机选择
+            while (distractors.length < 2) {
+                const randomRoman = romanArray[Math.floor(Math.random() * romanArray.length)];
+                if (randomRoman !== correctRoman && !distractors.includes(randomRoman)) {
+                    distractors.push(randomRoman);
+                }
+            }
+            
+            // 随机选择两个干扰项
+            return distractors.slice(0, 2);
+        }
+
+        // 生成新题目
+        function generateQuestion() {
+            gameState.answered = false;
+            gameState.questionCount++;
+            
+            // 获取随机韩语文字
+            gameState.currentChar = getRandomKoreanChar();
+            koreanCharEl.textContent = gameState.currentChar;
+            
+            // 获取正确罗马音
+            gameState.correctRoman = getRomanization(gameState.currentChar);
+            
+            // 生成干扰项
+            const distractors = generateDistractors(gameState.correctRoman, gameState.currentChar);
+            
+            // 组合选项
+            gameState.options = [gameState.correctRoman, ...distractors];
+            
+            // 随机排序选项
+            for (let i = gameState.options.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [gameState.options[i], gameState.options[j]] = [gameState.options[j], gameState.options[i]];
+            }
+            
+            // 更新选项按钮
+            updateOptions();
+            
+            // 重置反馈
+            feedbackEl.textContent = '';
+            feedbackEl.className = 'feedback';
+            explanationEl.textContent = '提示：干扰项与正确答案在元音、辅音或收音方面相似';
+            
+            // 禁用下一题按钮
+            nextBtn.style.display = 'none';
+            
+            // 更新统计信息
+            updateStats();
+        }
+
+        // 更新选项按钮
+        function updateOptions() {
+            optionsContainerEl.innerHTML = '';
+            
+            gameState.options.forEach((option, index) => {
+                const button = document.createElement('div');
+                button.className = 'option';
+                button.textContent = `${String.fromCharCode(65 + index)}. ${option}`;
+                button.onclick = () => checkAnswer(option);
+                optionsContainerEl.appendChild(button);
+            });
+        }
+
+        // 检查答案
+        function checkAnswer(selectedAnswer) {
+            if (gameState.answered) return;
+            
+            gameState.answered = true;
+            const buttons = document.querySelectorAll('.option');
+            let isCorrect = false;
+            
+            buttons.forEach(button => {
+                const buttonAnswer = button.textContent.split('. ')[1];
+                
+                if (buttonAnswer === gameState.correctRoman) {
+                    button.classList.add('correct');
+                }
+                
+                if (buttonAnswer === selectedAnswer) {
+                    if (selectedAnswer === gameState.correctRoman) {
+                        button.classList.add('correct');
+                        isCorrect = true;
+                    } else {
+                        button.classList.add('incorrect');
+                    }
+                }
+            });
+            
+            if (isCorrect) {
+                feedbackEl.textContent = '✓ 正确！';
+                feedbackEl.className = 'feedback correct-feedback';
+                gameState.score += 10;
+                gameState.correctCount++;
+                
+                // 显示分解说明
+                const { initial, medial, final } = decomposeHangul(gameState.currentChar);
+                const initialRoman = koreanSounds.initials[initial]?.roman || '';
+                const medialRoman = koreanSounds.medials[medial]?.roman || '';
+                const finalRoman = koreanSounds.finals[final]?.roman || '';
+                
+                explanationEl.innerHTML = `
+                    <strong>分解说明：</strong><br>
+                    初声: ${initial} → ${initialRoman || '(无声)'}<br>
+                    中声: ${medial} → ${medialRoman}<br>
+                    ${final ? `终声: ${final} → ${finalRoman}` : '终声: 无收音'}
+                `;
+            } else {
+                feedbackEl.textContent = '✗ 错误！';
+                feedbackEl.className = 'feedback incorrect-feedback';
+                gameState.wrongCount++;
+                
+                explanationEl.innerHTML = `
+                    <strong>正确答案：${gameState.correctRoman}</strong><br>
+                    请记住这个读音，继续努力！
+                `;
+            }
+            
+            // 显示下一题按钮
+            nextBtn.style.display = 'block';
+            
+            // 更新统计信息
+            updateStats();
+        }
+
+        // 更新统计信息
+        function updateStats() {
+            scoreEl.textContent = gameState.score;
+            correctCountEl.textContent = gameState.correctCount;
+            wrongCountEl.textContent = gameState.wrongCount;
+            questionCountEl.textContent = gameState.questionCount;
+        }
+
+        // 初始化游戏
+        function initGame() {
+            generateQuestion();
+            nextBtn.onclick = generateQuestion;
+        }
+
+        // 页面加载时开始游戏
+        window.onload = initGame;
+    </script>
+</body>
+</html>
+

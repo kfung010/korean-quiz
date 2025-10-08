@@ -1,0 +1,2043 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>韩语单词分类音变与词义测验</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+        
+        header {
+            background: #2c3e50;
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.8;
+        }
+        
+        .category-selection {
+            padding: 20px;
+            background: #ecf0f1;
+            border-bottom: 1px solid #bdc3c7;
+        }
+        
+        .category-title {
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .category-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+        }
+        
+        .category-btn {
+            padding: 12px;
+            background: white;
+            border: 2px solid #3498db;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-weight: bold;
+            color: #3498db;
+        }
+        
+        .category-btn:hover {
+            background: #3498db;
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .category-btn.active {
+            background: #3498db;
+            color: white;
+        }
+        
+        .quiz-area {
+            padding: 30px;
+        }
+        
+        .question-container {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        .korean-word {
+            font-size: 3.5rem;
+            margin: 20px 0;
+            color: #2c3e50;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .speaker-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .speaker-btn:hover {
+            background: #2980b9;
+            transform: scale(1.1);
+        }
+        
+        .speaker-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .speaker-btn.playing {
+            background: #e74c3c;
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .options-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .option {
+            padding: 18px;
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .option:hover {
+            background: #e9ecef;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .option.correct {
+            background: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+        
+        .option.incorrect {
+            background: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+        
+        .feedback {
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin: 20px 0;
+            min-height: 30px;
+        }
+        
+        .correct-feedback {
+            color: #28a745;
+        }
+        
+        .incorrect-feedback {
+            color: #dc3545;
+        }
+        
+        .next-btn {
+            display: block;
+            width: 200px;
+            margin: 0 auto;
+            padding: 14px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .next-btn:hover {
+            background: #2980b9;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            background: #f8f9fa;
+            padding: 15px;
+            border-top: 1px solid #dee2e6;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+        
+        .explanation {
+            background: #e9f7fe;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+        
+        .stage-indicator {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        
+        .stage {
+            padding: 8px 16px;
+            margin: 0 10px;
+            border-radius: 20px;
+            background: #e9ecef;
+            font-weight: bold;
+        }
+        
+        .stage.active {
+            background: #3498db;
+            color: white;
+        }
+        
+        @media (max-width: 768px) {
+            .korean-word {
+                font-size: 2.5rem;
+            }
+            
+            .options-container {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .speaker-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
+            }
+            
+            .category-buttons {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .category-buttons {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🇰🇷 韩语单词分类练习</h1>
+            <div class="subtitle">选择类别后开始练习正确读音和中文意思</div>
+        </header>
+        
+        <div class="category-selection">
+            <div class="category-title">选择练习类别：</div>
+            <div class="category-buttons" id="categoryButtons">
+                <!-- 分类按钮将通过JavaScript动态生成 -->
+            </div>
+        </div>
+        
+        <div class="quiz-area">
+            <div class="stage-indicator">
+                <div class="stage active" id="stage1">读音选择</div>
+                <div class="stage" id="stage2">词义选择</div>
+            </div>
+            
+            <div class="question-container">
+                <button class="speaker-btn" id="speakerBtn">🔊</button>
+                <div class="korean-word" id="koreanWord">한국어</div>
+            </div>
+            
+            <div class="options-container" id="optionsContainer">
+                <!-- 选项将通过JavaScript动态生成 -->
+            </div>
+            
+            <div class="feedback" id="feedback"></div>
+            
+            <button class="next-btn" id="nextBtn">下一题</button>
+            
+            <div class="explanation" id="explanation">
+                提示：请先选择一个类别开始练习，注意韩语中的音变现象
+            </div>
+        </div>
+        
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-value" id="score">0</div>
+                <div class="stat-label">得分</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="correctCount">0</div>
+                <div class="stat-label">正确</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="wrongCount">0</div>
+                <div class="stat-label">错误</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="questionCount">0</div>
+                <div class="stat-label">题目</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 分类定义
+        const categories = {
+            "全部": "all",
+            "动物": "animals",
+            "交通工具": "transportation",
+            "场所": "places",
+            "颜色": "colors",
+            "称呼": "relationships",
+            "职业": "occupations",
+            "食物饮料": "food_drink",
+            "家居物品": "household",
+            "服装": "clothing",
+            "身体部位": "body_parts",
+            "自然": "nature",
+            "材料": "materials",
+            "数字": "numbers",
+            "时间": "time",
+            "方位": "directions",
+            "其他名词": "other_nouns",
+            "动词": "verbs",
+            "形容词": "adjectives"
+        };
+
+        // 韩语单词数据 - 添加分类标签
+        const koreanWords = [
+            // 动物
+            {word: "개", meaning: "狗", category: "animals"},
+            {word: "고양이", meaning: "猫", category: "animals"},
+            {word: "물고기", meaning: "鱼", category: "animals"},
+            {word: "새", meaning: "鸟", category: "animals"},
+            {word: "소", meaning: "牛", category: "animals"},
+            {word: "쥐", meaning: "老鼠", category: "animals"},
+            {word: "말", meaning: "马", category: "animals"},
+            {word: "날개", meaning: "翅膀", category: "animals"},
+            {word: "동물", meaning: "动物", category: "animals"},
+
+            // 交通工具
+            {word: "기차", meaning: "火车", category: "transportation"},
+            {word: "비행기", meaning: "飞机", category: "transportation"},
+            {word: "차", meaning: "汽车", category: "transportation"},
+            {word: "트럭", meaning: "卡车", category: "transportation"},
+            {word: "자전거", meaning: "自行车", category: "transportation"},
+            {word: "버스", meaning: "公交车", category: "transportation"},
+            {word: "배", meaning: "船;梨;胃", category: "transportation"},
+            {word: "선박", meaning: "商船", category: "transportation"},
+            {word: "타이어", meaning: "轮胎", category: "transportation"},
+            {word: "기름", meaning: "油;汽油", category: "transportation"},
+            {word: "엔진", meaning: "引擎", category: "transportation"},
+            {word: "기차표", meaning: "火车票", category: "transportation"},
+            {word: "교통", meaning: "交通;运输", category: "transportation"},
+
+            // 场所
+            {word: "도시", meaning: "城市", category: "places"},
+            {word: "집", meaning: "房子", category: "places"},
+            {word: "길", meaning: "街道", category: "places"},
+            {word: "도로", meaning: "道路", category: "places"},
+            {word: "공항", meaning: "机场", category: "places"},
+            {word: "기차역", meaning: "火车站", category: "places"},
+            {word: "다리", meaning: "桥;腿", category: "places"},
+            {word: "호텔", meaning: "酒店", category: "places"},
+            {word: "식당", meaning: "餐厅", category: "places"},
+            {word: "농장", meaning: "农场", category: "places"},
+            {word: "재판소", meaning: "法院", category: "places"},
+            {word: "학교", meaning: "学校", category: "places"},
+            {word: "사무실", meaning: "办公室", category: "places"},
+            {word: "방", meaning: "房间", category: "places"},
+            {word: "마을", meaning: "村庄,城镇", category: "places"},
+            {word: "대학교", meaning: "大学", category: "places"},
+            {word: "클럽", meaning: "俱乐部", category: "places"},
+            {word: "술집", meaning: "酒吧", category: "places"},
+            {word: "공원", meaning: "公园", category: "places"},
+            {word: "캠프", meaning: "营地", category: "places"},
+            {word: "가게", meaning: "商店", category: "places"},
+            {word: "극장", meaning: "剧院", category: "places"},
+            {word: "도서관", meaning: "图书馆", category: "places"},
+            {word: "병원", meaning: "医院", category: "places"},
+            {word: "교회", meaning: "教堂", category: "places"},
+            {word: "은행", meaning: "银行", category: "places"},
+
+            // 颜色
+            {word: "빨간색", meaning: "红色", category: "colors"},
+            {word: "초록색", meaning: "绿色", category: "colors"},
+            {word: "파랑색", meaning: "蓝色", category: "colors"},
+            {word: "노랑색", meaning: "黄色", category: "colors"},
+            {word: "곤색", meaning: "海军蓝", category: "colors"},
+            {word: "분홍색", meaning: "粉色", category: "colors"},
+            {word: "갈색", meaning: "棕色", category: "colors"},
+            {word: "오렌지색", meaning: "橙色", category: "colors"},
+            {word: "검은색", meaning: "黑色", category: "colors"},
+            {word: "하얀색", meaning: "白色", category: "colors"},
+            {word: "회색", meaning: "灰色", category: "colors"},
+            {word: "색깔", meaning: "颜色", category: "colors"},
+
+            // 称呼
+            {word: "저", meaning: "我(正式);那个", category: "relationships"},
+            {word: "나", meaning: "我(非正式)", category: "relationships"},
+            {word: "그", meaning: "那个;他;她;它", category: "relationships"},
+            {word: "우리", meaning: "我们;我们的", category: "relationships"},
+            {word: "상대방", meaning: "对方", category: "relationships"},
+            {word: "저의", meaning: "我的(正式)", category: "relationships"},
+            {word: "내", meaning: "我的(非正式)", category: "relationships"},
+            {word: "당신", meaning: "你(正式)", category: "relationships"},
+            {word: "내가", meaning: "我(主语)", category: "relationships"},
+            {word: "네가", meaning: "你", category: "relationships"},
+            {word: "너희들", meaning: "你们", category: "relationships"},
+            {word: "아들", meaning: "儿子", category: "relationships"},
+            {word: "딸", meaning: "女儿", category: "relationships"},
+            {word: "엄마", meaning: "妈妈", category: "relationships"},
+            {word: "아빠", meaning: "爸爸", category: "relationships"},
+            {word: "부모님", meaning: "父母", category: "relationships"},
+            {word: "애기", meaning: "婴儿", category: "relationships"},
+            {word: "남자", meaning: "男人", category: "relationships"},
+            {word: "여자", meaning: "女人", category: "relationships"},
+            {word: "형", meaning: "哥哥(男称)", category: "relationships"},
+            {word: "누나", meaning: "姐姐(男称)", category: "relationships"},
+            {word: "오빠", meaning: "哥哥(女称)", category: "relationships"},
+            {word: "언니", meaning: "姐姐(女称)", category: "relationships"},
+            {word: "할아버지", meaning: "爷爷", category: "relationships"},
+            {word: "할머니", meaning: "奶奶", category: "relationships"},
+            {word: "남편", meaning: "丈夫", category: "relationships"},
+            {word: "아내", meaning: "妻子", category: "relationships"},
+            {word: "옆집 사람", meaning: "邻居", category: "relationships"},
+            {word: "여자아이", meaning: "小女孩", category: "relationships"},
+            {word: "남자아이", meaning: "小男孩", category: "relationships"},
+            {word: "성인", meaning: "成人", category: "relationships"},
+            {word: "인간", meaning: "人类", category: "relationships"},
+            {word: "친구", meaning: "朋友", category: "relationships"},
+            {word: "피해자", meaning: "受害者", category: "relationships"},
+            {word: "선수", meaning: "选手", category: "relationships"},
+            {word: "팬", meaning: "粉丝", category: "relationships"},
+            {word: "군중", meaning: "人群", category: "relationships"},
+            {word: "사람", meaning: "人", category: "relationships"},
+
+            // 职业
+            {word: "선생님", meaning: "老师", category: "occupations"},
+            {word: "학생", meaning: "学生", category: "occupations"},
+            {word: "변호사", meaning: "律师", category: "occupations"},
+            {word: "의사", meaning: "医生", category: "occupations"},
+            {word: "환자", meaning: "病人", category: "occupations"},
+            {word: "웨이터", meaning: "服务员", category: "occupations"},
+            {word: "비서", meaning: "秘书", category: "occupations"},
+            {word: "신부님", meaning: "神父", category: "occupations"},
+            {word: "경찰", meaning: "警察", category: "occupations"},
+            {word: "군대", meaning: "军队", category: "occupations"},
+            {word: "군인", meaning: "军人", category: "occupations"},
+            {word: "예술가", meaning: "艺术家", category: "occupations"},
+            {word: "저자", meaning: "作者", category: "occupations"},
+            {word: "매니저", meaning: "经理", category: "occupations"},
+            {word: "기자", meaning: "记者", category: "occupations"},
+            {word: "배우", meaning: "演员", category: "occupations"},
+            {word: "직업", meaning: "职业", category: "occupations"},
+            {word: "왕", meaning: "国王", category: "occupations"},
+            {word: "여왕", meaning: "女王", category: "occupations"},
+            {word: "대통령", meaning: "总统", category: "occupations"},
+
+            // 食物饮料
+            {word: "커피", meaning: "咖啡", category: "food_drink"},
+            {word: "차", meaning: "茶", category: "food_drink"},
+            {word: "맥주", meaning: "啤酒", category: "food_drink"},
+            {word: "주스", meaning: "果汁", category: "food_drink"},
+            {word: "물", meaning: "水", category: "food_drink"},
+            {word: "우유", meaning: "牛奶", category: "food_drink"},
+            {word: "음료수", meaning: "饮料", category: "food_drink"},
+            {word: "계란", meaning: "鸡蛋", category: "food_drink"},
+            {word: "치즈", meaning: "奶酪", category: "food_drink"},
+            {word: "국물", meaning: "汤,肉汤", category: "food_drink"},
+            {word: "케이크", meaning: "蛋糕", category: "food_drink"},
+            {word: "닭", meaning: "鸡", category: "food_drink"},
+            {word: "돼지고기", meaning: "猪肉", category: "food_drink"},
+            {word: "소고기", meaning: "牛肉", category: "food_drink"},
+            {word: "사과", meaning: "苹果", category: "food_drink"},
+            {word: "바나나", meaning: "香蕉", category: "food_drink"},
+            {word: "오렌지", meaning: "橙子", category: "food_drink"},
+            {word: "레몬", meaning: "柠檬", category: "food_drink"},
+            {word: "옥수수", meaning: "玉米", category: "food_drink"},
+            {word: "쌀", meaning: "生米", category: "food_drink"},
+            {word: "밥", meaning: "米饭;餐", category: "food_drink"},
+            {word: "식용유", meaning: "食用油", category: "food_drink"},
+            {word: "씨", meaning: "种子", category: "food_drink"},
+            {word: "칼", meaning: "刀", category: "food_drink"},
+            {word: "숟가락", meaning: "勺子", category: "food_drink"},
+            {word: "포크", meaning: "叉子", category: "food_drink"},
+            {word: "접시", meaning: "盘子", category: "food_drink"},
+            {word: "컵", meaning: "杯子", category: "food_drink"},
+            {word: "아침", meaning: "早晨;早餐", category: "food_drink"},
+            {word: "점심", meaning: "午餐", category: "food_drink"},
+            {word: "저녁", meaning: "晚餐;晚上", category: "food_drink"},
+            {word: "설탕", meaning: "糖", category: "food_drink"},
+            {word: "소금", meaning: "盐", category: "food_drink"},
+            {word: "병", meaning: "瓶子", category: "food_drink"},
+            {word: "음식", meaning: "食物", category: "food_drink"},
+
+            // 家居物品
+            {word: "책상", meaning: "书桌", category: "household"},
+            {word: "탁자", meaning: "咖啡桌", category: "household"},
+            {word: "식탁", meaning: "餐桌", category: "household"},
+            {word: "의자", meaning: "椅子", category: "household"},
+            {word: "침대", meaning: "床", category: "household"},
+            {word: "꿈", meaning: "梦", category: "household"},
+            {word: "창문", meaning: "窗户", category: "household"},
+            {word: "문", meaning: "门", category: "household"},
+            {word: "침실", meaning: "卧室", category: "household"},
+            {word: "부엌", meaning: "厨房", category: "household"},
+            {word: "화장실", meaning: "卫生间", category: "household"},
+            {word: "연필", meaning: "铅笔", category: "household"},
+            {word: "볼펜", meaning: "钢笔", category: "household"},
+            {word: "사진", meaning: "照片", category: "household"},
+            {word: "비누", meaning: "肥皂", category: "household"},
+            {word: "책", meaning: "书", category: "household"},
+            {word: "페이지", meaning: "页", category: "household"},
+            {word: "열쇠", meaning: "钥匙", category: "household"},
+            {word: "페인트", meaning: "油漆", category: "household"},
+            {word: "편지", meaning: "信", category: "household"},
+            {word: "메모", meaning: "笔记", category: "household"},
+            {word: "벽", meaning: "墙", category: "household"},
+            {word: "종이", meaning: "纸", category: "household"},
+            {word: "천장", meaning: "天花板", category: "household"},
+            {word: "지붕", meaning: "屋顶", category: "household"},
+            {word: "수영장", meaning: "游泳池", category: "household"},
+            {word: "자물쇠", meaning: "锁", category: "household"},
+            {word: "전화기", meaning: "电话", category: "household"},
+            {word: "정원", meaning: "花园", category: "household"},
+            {word: "마당", meaning: "院子", category: "household"},
+            {word: "바늘", meaning: "针", category: "household"},
+            {word: "가방", meaning: "包", category: "household"},
+            {word: "상자", meaning: "盒子", category: "household"},
+            {word: "선물", meaning: "礼物", category: "household"},
+            {word: "카드", meaning: "卡片", category: "household"},
+            {word: "반지", meaning: "戒指", category: "household"},
+            {word: "도구", meaning: "工具", category: "household"},
+            {word: "시계", meaning: "钟表,手表", category: "household"},
+            {word: "램프", meaning: "灯", category: "household"},
+            {word: "휴대폰", meaning: "手机", category: "household"},
+            {word: "네트워크", meaning: "网络", category: "household"},
+            {word: "컴퓨터", meaning: "电脑", category: "household"},
+            {word: "노트북", meaning: "笔记本电脑", category: "household"},
+            {word: "화면", meaning: "屏幕", category: "household"},
+            {word: "카메라", meaning: "相机", category: "household"},
+            {word: "텔레비전", meaning: "电视", category: "household"},
+            {word: "라디오", meaning: "收音机", category: "household"},
+
+            // 服装
+            {word: "모자", meaning: "帽子", category: "clothing"},
+            {word: "드레스", meaning: "连衣裙", category: "clothing"},
+            {word: "양복", meaning: "西装", category: "clothing"},
+            {word: "치마", meaning: "裙子", category: "clothing"},
+            {word: "티셔츠", meaning: "T恤", category: "clothing"},
+            {word: "바지", meaning: "裤子", category: "clothing"},
+            {word: "신발", meaning: "鞋子", category: "clothing"},
+            {word: "주머니", meaning: "口袋", category: "clothing"},
+            {word: "코트", meaning: "外套", category: "clothing"},
+            {word: "옷", meaning: "衣服", category: "clothing"},
+
+            // 身体部位
+            {word: "머리", meaning: "头", category: "body_parts"},
+            {word: "목", meaning: "脖子", category: "body_parts"},
+            {word: "얼굴", meaning: "脸", category: "body_parts"},
+            {word: "턱수염", meaning: "胡须", category: "body_parts"},
+            {word: "머리카락", meaning: "头发", category: "body_parts"},
+            {word: "눈", meaning: "眼睛", category: "body_parts"},
+            {word: "입", meaning: "嘴", category: "body_parts"},
+            {word: "입술", meaning: "嘴唇", category: "body_parts"},
+            {word: "코", meaning: "鼻子", category: "body_parts"},
+            {word: "이빨", meaning: "牙齿", category: "body_parts"},
+            {word: "귀", meaning: "耳朵", category: "body_parts"},
+            {word: "눈물", meaning: "眼泪", category: "body_parts"},
+            {word: "혀", meaning: "舌头", category: "body_parts"},
+            {word: "등", meaning: "背部", category: "body_parts"},
+            {word: "허리", meaning: "腰部", category: "body_parts"},
+            {word: "발가락", meaning: "脚趾", category: "body_parts"},
+            {word: "손가락", meaning: "手指", category: "body_parts"},
+            {word: "발", meaning: "脚", category: "body_parts"},
+            {word: "손", meaning: "手", category: "body_parts"},
+            {word: "팔", meaning: "手臂", category: "body_parts"},
+            {word: "어깨", meaning: "肩膀", category: "body_parts"},
+            {word: "심장", meaning: "心脏", category: "body_parts"},
+            {word: "피", meaning: "血液", category: "body_parts"},
+            {word: "뇌", meaning: "大脑", category: "body_parts"},
+            {word: "무릎", meaning: "膝盖", category: "body_parts"},
+            {word: "땀", meaning: "汗水", category: "body_parts"},
+            {word: "병", meaning: "疾病", category: "body_parts"},
+            {word: "뼈", meaning: "骨头", category: "body_parts"},
+            {word: "목소리", meaning: "声音", category: "body_parts"},
+            {word: "피부", meaning: "皮肤", category: "body_parts"},
+            {word: "몸", meaning: "身体", category: "body_parts"},
+
+            // 自然
+            {word: "바다", meaning: "海,海洋", category: "nature"},
+            {word: "강", meaning: "河流", category: "nature"},
+            {word: "산", meaning: "山", category: "nature"},
+            {word: "비", meaning: "雨", category: "nature"},
+            {word: "눈", meaning: "雪;眼睛", category: "nature"},
+            {word: "달", meaning: "月亮;月份", category: "nature"},
+            {word: "세계", meaning: "世界", category: "nature"},
+            {word: "지구", meaning: "地球", category: "nature"},
+            {word: "숲", meaning: "森林", category: "nature"},
+            {word: "하늘", meaning: "天空", category: "nature"},
+            {word: "식물", meaning: "植物", category: "nature"},
+            {word: "바람", meaning: "风", category: "nature"},
+            {word: "토양", meaning: "土壤", category: "nature"},
+            {word: "꽃", meaning: "花", category: "nature"},
+            {word: "계곡", meaning: "山谷", category: "nature"},
+            {word: "뿌리", meaning: "根", category: "nature"},
+            {word: "호수", meaning: "湖", category: "nature"},
+            {word: "별", meaning: "星星", category: "nature"},
+            {word: "잔디", meaning: "草", category: "nature"},
+            {word: "나뭇잎", meaning: "叶子", category: "nature"},
+            {word: "공기", meaning: "空气", category: "nature"},
+            {word: "모래", meaning: "沙子", category: "nature"},
+            {word: "해변", meaning: "海滩", category: "nature"},
+            {word: "파도", meaning: "波浪", category: "nature"},
+            {word: "불", meaning: "火", category: "nature"},
+            {word: "어름", meaning: "冰", category: "nature"},
+            {word: "섬", meaning: "岛屿", category: "nature"},
+            {word: "언덕", meaning: "山丘", category: "nature"},
+            {word: "열", meaning: "发烧;热量", category: "nature"},
+            {word: "자연", meaning: "自然", category: "nature"},
+
+            // 材料
+            {word: "유리", meaning: "玻璃", category: "materials"},
+            {word: "금속", meaning: "金属", category: "materials"},
+            {word: "플라스틱", meaning: "塑料", category: "materials"},
+            {word: "나무", meaning: "树,木材", category: "materials"},
+            {word: "돌", meaning: "石头", category: "materials"},
+            {word: "다이아몬드", meaning: "钻石", category: "materials"},
+            {word: "찰흙", meaning: "粘土", category: "materials"},
+            {word: "먼지", meaning: "灰尘", category: "materials"},
+            {word: "금", meaning: "黄金", category: "materials"},
+            {word: "구리", meaning: "铜", category: "materials"},
+            {word: "은", meaning: "银", category: "materials"},
+            {word: "재료", meaning: "材料", category: "materials"},
+
+            // 数字
+            {word: "공", meaning: "零;球", category: "numbers"},
+            {word: "하나", meaning: "1", category: "numbers"},
+            {word: "둘", meaning: "2", category: "numbers"},
+            {word: "셋", meaning: "3", category: "numbers"},
+            {word: "넷", meaning: "4", category: "numbers"},
+            {word: "다섯", meaning: "5", category: "numbers"},
+            {word: "여섯", meaning: "6", category: "numbers"},
+            {word: "일곱", meaning: "7", category: "numbers"},
+            {word: "여덟", meaning: "8", category: "numbers"},
+            {word: "아홉", meaning: "9", category: "numbers"},
+            {word: "열", meaning: "10", category: "numbers"},
+            {word: "열하나", meaning: "11", category: "numbers"},
+            {word: "열둘", meaning: "12", category: "numbers"},
+            {word: "열셋", meaning: "13", category: "numbers"},
+            {word: "열넷", meaning: "14", category: "numbers"},
+            {word: "열다섯", meaning: "15", category: "numbers"},
+            {word: "열여섯", meaning: "16", category: "numbers"},
+            {word: "열일곱", meaning: "17", category: "numbers"},
+            {word: "열여덟", meaning: "18", category: "numbers"},
+            {word: "열아홉", meaning: "19", category: "numbers"},
+            {word: "스물", meaning: "20", category: "numbers"},
+            {word: "스물한", meaning: "21", category: "numbers"},
+            {word: "스물두", meaning: "22", category: "numbers"},
+            {word: "서른", meaning: "30", category: "numbers"},
+            {word: "서른하나", meaning: "31", category: "numbers"},
+            {word: "서른둘", meaning: "32", category: "numbers"},
+            {word: "마흔", meaning: "40", category: "numbers"},
+            {word: "마흔하나", meaning: "41", category: "numbers"},
+            {word: "마흔둘", meaning: "42", category: "numbers"},
+            {word: "쉰", meaning: "50", category: "numbers"},
+            {word: "쉰하나", meaning: "51", category: "numbers"},
+            {word: "쉰둘", meaning: "52", category: "numbers"},
+            {word: "예순", meaning: "60", category: "numbers"},
+            {word: "예순하나", meaning: "61", category: "numbers"},
+            {word: "예순둘", meaning: "62", category: "numbers"},
+            {word: "여든", meaning: "80", category: "numbers"},
+            {word: "여든하나", meaning: "81", category: "numbers"},
+            {word: "여든둘", meaning: "82", category: "numbers"},
+            {word: "아흔", meaning: "90", category: "numbers"},
+            {word: "아흔하나", meaning: "91", category: "numbers"},
+            {word: "아흔둘", meaning: "92", category: "numbers"},
+            {word: "백", meaning: "100", category: "numbers"},
+            {word: "백하나", meaning: "101", category: "numbers"},
+            {word: "백둘", meaning: "102", category: "numbers"},
+            {word: "백십", meaning: "110", category: "numbers"},
+            {word: "백십일", meaning: "111", category: "numbers"},
+            {word: "천", meaning: "1000", category: "numbers"},
+            {word: "천일", meaning: "1001", category: "numbers"},
+            {word: "만", meaning: "10,000", category: "numbers"},
+            {word: "십만", meaning: "100,000", category: "numbers"},
+            {word: "백만", meaning: "1,000,000", category: "numbers"},
+            {word: "천만", meaning: "10,000,000", category: "numbers"},
+            {word: "억", meaning: "100,000,000", category: "numbers"},
+            {word: "십억", meaning: "1,000,000,000", category: "numbers"},
+            {word: "첫번째", meaning: "第一", category: "numbers"},
+            {word: "둘째", meaning: "第二", category: "numbers"},
+            {word: "세번째", meaning: "第三", category: "numbers"},
+            {word: "네번째", meaning: "第四", category: "numbers"},
+            {word: "다섯번째", meaning: "第五", category: "numbers"},
+            {word: "번호", meaning: "号码", category: "numbers"},
+
+            // 时间
+            {word: "일월", meaning: "一月", category: "time"},
+            {word: "이월", meaning: "二月", category: "time"},
+            {word: "삼월", meaning: "三月", category: "time"},
+            {word: "사월", meaning: "四月", category: "time"},
+            {word: "오월", meaning: "五月", category: "time"},
+            {word: "유월", meaning: "六月", category: "time"},
+            {word: "칠월", meaning: "七月", category: "time"},
+            {word: "팔월", meaning: "八月", category: "time"},
+            {word: "구월", meaning: "九月", category: "time"},
+            {word: "시월", meaning: "十月", category: "time"},
+            {word: "십일월", meaning: "十一月", category: "time"},
+            {word: "십이월", meaning: "十二月", category: "time"},
+            {word: "월요일", meaning: "星期一", category: "time"},
+            {word: "화요일", meaning: "星期二", category: "time"},
+            {word: "수요일", meaning: "星期三", category: "time"},
+            {word: "목요일", meaning: "星期四", category: "time"},
+            {word: "금요일", meaning: "星期五", category: "time"},
+            {word: "토요일", meaning: "星期六", category: "time"},
+            {word: "일요일", meaning: "星期日", category: "time"},
+            {word: "년", meaning: "年", category: "time"},
+            {word: "달", meaning: "月", category: "time"},
+            {word: "시간", meaning: "小时;时间", category: "time"},
+            {word: "분", meaning: "分钟;人(敬语)", category: "time"},
+            {word: "밤", meaning: "夜晚", category: "time"},
+            {word: "여름", meaning: "夏天", category: "time"},
+            {word: "봄", meaning: "春天", category: "time"},
+            {word: "겨울", meaning: "冬天", category: "time"},
+            {word: "가을", meaning: "秋天", category: "time"},
+            {word: "계절", meaning: "季节", category: "time"},
+
+            // 方位
+            {word: "위에", meaning: "上面", category: "directions"},
+            {word: "아래", meaning: "下面", category: "directions"},
+            {word: "측면", meaning: "侧面", category: "directions"},
+            {word: "뒷면", meaning: "背面", category: "directions"},
+            {word: "안에", meaning: "里面", category: "directions"},
+            {word: "밖에", meaning: "外面", category: "directions"},
+            {word: "왼쪽", meaning: "左边", category: "directions"},
+            {word: "오른쪽", meaning: "右边", category: "directions"},
+            {word: "곧장", meaning: "直接", category: "directions"},
+            {word: "북쪽", meaning: "北", category: "directions"},
+            {word: "남쪽", meaning: "南", category: "directions"},
+            {word: "동쪽", meaning: "东", category: "directions"},
+            {word: "서쪽", meaning: "西", category: "directions"},
+            {word: "방향", meaning: "方向", category: "directions"},
+
+            // 其他名词
+            {word: "시장", meaning: "市场", category: "other_nouns"},
+            {word: "나라", meaning: "国家", category: "other_nouns"},
+            {word: "건물", meaning: "建筑物", category: "other_nouns"},
+            {word: "바닥", meaning: "地板", category: "other_nouns"},
+            {word: "공간", meaning: "空间,房间", category: "other_nouns"},
+            {word: "위치", meaning: "位置", category: "other_nouns"},
+            {word: "얼룩", meaning: "污渍", category: "other_nouns"},
+            {word: "종교", meaning: "宗教", category: "other_nouns"},
+            {word: "천국", meaning: "天堂", category: "other_nouns"},
+            {word: "지옥", meaning: "地狱", category: "other_nouns"},
+            {word: "죽음", meaning: "死亡", category: "other_nouns"},
+            {word: "약", meaning: "药", category: "other_nouns"},
+            {word: "돈", meaning: "钱", category: "other_nouns"},
+            {word: "원", meaning: "韩元", category: "other_nouns"},
+            {word: "지폐", meaning: "纸币", category: "other_nouns"},
+            {word: "결혼", meaning: "婚姻", category: "other_nouns"},
+            {word: "결혼식", meaning: "婚礼", category: "other_nouns"},
+            {word: "팀", meaning: "团队", category: "other_nouns"},
+            {word: "인종", meaning: "种族", category: "other_nouns"},
+            {word: "섹스", meaning: "性", category: "other_nouns"},
+            {word: "성별", meaning: "性别", category: "other_nouns"},
+            {word: "살인", meaning: "谋杀", category: "other_nouns"},
+            {word: "교도소", meaning: "监狱", category: "other_nouns"},
+            {word: "기술", meaning: "技术", category: "other_nouns"},
+            {word: "정력", meaning: "精力,能量", category: "other_nouns"},
+            {word: "전쟁", meaning: "战争", category: "other_nouns"},
+            {word: "평화", meaning: "和平", category: "other_nouns"},
+            {word: "공격", meaning: "攻击", category: "other_nouns"},
+            {word: "선거", meaning: "选举", category: "other_nouns"},
+            {word: "잡지", meaning: "杂志", category: "other_nouns"},
+            {word: "신문", meaning: "报纸", category: "other_nouns"},
+            {word: "독", meaning: "毒药", category: "other_nouns"},
+            {word: "총", meaning: "枪", category: "other_nouns"},
+            {word: "스포츠", meaning: "运动", category: "other_nouns"},
+            {word: "경주", meaning: "比赛", category: "other_nouns"},
+            {word: "운동", meaning: "锻炼", category: "other_nouns"},
+            {word: "공", meaning: "球", category: "other_nouns"},
+            {word: "게임", meaning: "游戏", category: "other_nouns"},
+            {word: "가격", meaning: "价格", category: "other_nouns"},
+            {word: "계약서", meaning: "合同", category: "other_nouns"},
+            {word: "마약", meaning: "毒品", category: "other_nouns"},
+            {word: "간판", meaning: "招牌", category: "other_nouns"},
+            {word: "과학", meaning: "科学", category: "other_nouns"},
+            {word: "하느님", meaning: "神", category: "other_nouns"},
+            {word: "밴드", meaning: "乐队", category: "other_nouns"},
+            {word: "노래", meaning: "歌曲", category: "other_nouns"},
+            {word: "악기", meaning: "乐器", category: "other_nouns"},
+            {word: "음악", meaning: "音乐", category: "other_nouns"},
+            {word: "영화", meaning: "电影", category: "other_nouns"},
+            {word: "미술", meaning: "艺术", category: "other_nouns"},
+            {word: "미터", meaning: "米", category: "other_nouns"},
+            {word: "센티미터", meaning: "厘米", category: "other_nouns"},
+            {word: "킬로미터", meaning: "千米", category: "other_nouns"},
+            {word: "반", meaning: "一半", category: "other_nouns"},
+            {word: "서클", meaning: "圆形", category: "other_nouns"},
+            {word: "정사각형", meaning: "正方形", category: "other_nouns"},
+            {word: "온도", meaning: "温度", category: "other_nouns"},
+            {word: "날짜", meaning: "日期", category: "other_nouns"},
+            {word: "무게", meaning: "重量", category: "other_nouns"},
+            {word: "가장자리", meaning: "边缘", category: "other_nouns"},
+            {word: "지도", meaning: "地图", category: "other_nouns"},
+            {word: "점", meaning: "点", category: "other_nouns"},
+            {word: "자음", meaning: "辅音", category: "other_nouns"},
+            {word: "모음", meaning: "元音", category: "other_nouns"},
+            {word: "가벼운", meaning: "轻的", category: "other_nouns"},
+            {word: "소리", meaning: "声音", category: "other_nouns"},
+            {word: "네", meaning: "是(正式)", category: "other_nouns"},
+            {word: "아니요", meaning: "不(正式)", category: "other_nouns"},
+            {word: "조각", meaning: "碎片", category: "other_nouns"},
+            {word: "아픔", meaning: "疼痛", category: "other_nouns"},
+            {word: "상처", meaning: "伤口", category: "other_nouns"},
+            {word: "구멍", meaning: "洞", category: "other_nouns"},
+            {word: "이미지", meaning: "图像", category: "other_nouns"},
+            {word: "패턴", meaning: "模式", category: "other_nouns"},
+            {word: "명사", meaning: "名词", category: "other_nouns"},
+            {word: "동사", meaning: "动词", category: "other_nouns"},
+            {word: "형용사", meaning: "形容词", category: "other_nouns"},
+
+            // 动词
+            {word: "일하다", meaning: "工作", category: "verbs"},
+            {word: "놀다", meaning: "玩", category: "verbs"},
+            {word: "걷다", meaning: "走", category: "verbs"},
+            {word: "뛰다", meaning: "跑", category: "verbs"},
+            {word: "운전하다", meaning: "开车", category: "verbs"},
+            {word: "날다", meaning: "飞", category: "verbs"},
+            {word: "수영하다", meaning: "游泳", category: "verbs"},
+            {word: "가다", meaning: "去", category: "verbs"},
+            {word: "멈추다", meaning: "停止", category: "verbs"},
+            {word: "따르다", meaning: "跟随", category: "verbs"},
+            {word: "생각하다", meaning: "思考", category: "verbs"},
+            {word: "말하다", meaning: "说", category: "verbs"},
+            {word: "먹다", meaning: "吃", category: "verbs"},
+            {word: "마시다", meaning: "喝", category: "verbs"},
+            {word: "죽이다", meaning: "杀", category: "verbs"},
+            {word: "죽다", meaning: "死", category: "verbs"},
+            {word: "웃다", meaning: "笑", category: "verbs"},
+            {word: "울다", meaning: "哭", category: "verbs"},
+            {word: "사다", meaning: "买", category: "verbs"},
+            {word: "지불하다", meaning: "支付", category: "verbs"},
+            {word: "팔다", meaning: "卖", category: "verbs"},
+            {word: "쏘다", meaning: "射击", category: "verbs"},
+            {word: "배우다", meaning: "学习", category: "verbs"},
+            {word: "점프하다", meaning: "跳跃", category: "verbs"},
+            {word: "냄새를 맡다", meaning: "闻", category: "verbs"},
+            {word: "듣다", meaning: "听", category: "verbs"},
+            {word: "맛보다", meaning: "尝", category: "verbs"},
+            {word: "보다", meaning: "看", category: "verbs"},
+            {word: "만지다", meaning: "触摸", category: "verbs"},
+            {word: "뽀뽀하다", meaning: "亲吻", category: "verbs"},
+            {word: "불타다", meaning: "燃烧", category: "verbs"},
+            {word: "녹다", meaning: "融化", category: "verbs"},
+            {word: "파다", meaning: "挖", category: "verbs"},
+            {word: "폭발하다", meaning: "爆炸", category: "verbs"},
+            {word: "앉다", meaning: "坐", category: "verbs"},
+            {word: "서다", meaning: "站", category: "verbs"},
+            {word: "사랑하다", meaning: "爱", category: "verbs"},
+            {word: "지나가다", meaning: "经过", category: "verbs"},
+            {word: "자르다", meaning: "切", category: "verbs"},
+            {word: "싸우다", meaning: "打架", category: "verbs"},
+            {word: "눕다", meaning: "躺下", category: "verbs"},
+            {word: "춤추다", meaning: "跳舞", category: "verbs"},
+            {word: "자다", meaning: "睡觉", category: "verbs"},
+            {word: "깨다", meaning: "醒来", category: "verbs"},
+            {word: "노래하다", meaning: "唱歌", category: "verbs"},
+            {word: "세다", meaning: "数", category: "verbs"},
+            {word: "결혼하다", meaning: "结婚", category: "verbs"},
+            {word: "기도하다", meaning: "祈祷", category: "verbs"},
+            {word: "이기다", meaning: "赢", category: "verbs"},
+            {word: "지다", meaning: "输", category: "verbs"},
+            {word: "섞다", meaning: "混合", category: "verbs"},
+            {word: "구부리다", meaning: "弯曲", category: "verbs"},
+            {word: "씻다", meaning: "洗", category: "verbs"},
+            {word: "요리하다", meaning: "烹饪", category: "verbs"},
+            {word: "열다", meaning: "打开", category: "verbs"},
+            {word: "닫다", meaning: "关闭", category: "verbs"},
+            {word: "쓰다", meaning: "写", category: "verbs"},
+            {word: "부르다", meaning: "叫", category: "verbs"},
+            {word: "돌다", meaning: "转", category: "verbs"},
+            {word: "건설하다", meaning: "建造", category: "verbs"},
+            {word: "가르치다", meaning: "教", category: "verbs"},
+            {word: "자라다", meaning: "成长", category: "verbs"},
+            {word: "그리다", meaning: "画", category: "verbs"},
+            {word: "먹이다", meaning: "喂", category: "verbs"},
+            {word: "잡다", meaning: "抓", category: "verbs"},
+            {word: "던지다", meaning: "扔", category: "verbs"},
+            {word: "청소하다", meaning: "清洁", category: "verbs"},
+            {word: "찾다", meaning: "寻找", category: "verbs"},
+            {word: "넘어지다", meaning: "摔倒", category: "verbs"},
+            {word: "밀다", meaning: "推", category: "verbs"},
+            {word: "당기다", meaning: "拉", category: "verbs"},
+            {word: "들다", meaning: "花费;携带", category: "verbs"},
+            {word: "망가지다", meaning: "损坏", category: "verbs"},
+            {word: "깨지다", meaning: "打破", category: "verbs"},
+            {word: "입다", meaning: "穿", category: "verbs"},
+            {word: "흔들다", meaning: "摇动", category: "verbs"},
+            {word: "서명하다", meaning: "签名", category: "verbs"},
+            {word: "패다", meaning: "打", category: "verbs"},
+            {word: "들어올리다", meaning: "举起", category: "verbs"},
+
+            // 形容词
+            {word: "길다", meaning: "长", category: "adjectives"},
+            {word: "짧다", meaning: "短", category: "adjectives"},
+            {word: "키가 크다", meaning: "高", category: "adjectives"},
+            {word: "키가 작다", meaning: "矮", category: "adjectives"},
+            {word: "넓다", meaning: "宽", category: "adjectives"},
+            {word: "크다", meaning: "大", category: "adjectives"},
+            {word: "작다", meaning: "小", category: "adjectives"},
+            {word: "느리다", meaning: "慢", category: "adjectives"},
+            {word: "빠르다", meaning: "快", category: "adjectives"},
+            {word: "뜨겁다", meaning: "热", category: "adjectives"},
+            {word: "차겁다", meaning: "冷", category: "adjectives"},
+            {word: "따뜻하다", meaning: "温暖", category: "adjectives"},
+            {word: "선선하다", meaning: "凉爽", category: "adjectives"},
+            {word: "새롭다", meaning: "新", category: "adjectives"},
+            {word: "오래되다", meaning: "旧(物品)", category: "adjectives"},
+            {word: "젊다", meaning: "年轻", category: "adjectives"},
+            {word: "늙다", meaning: "老(人)", category: "adjectives"},
+            {word: "좋다", meaning: "好", category: "adjectives"},
+            {word: "나쁘다", meaning: "坏", category: "adjectives"},
+            {word: "젖다", meaning: "湿", category: "adjectives"},
+            {word: "건조하다", meaning: "干燥", category: "adjectives"},
+            {word: "아프다", meaning: "生病,疼痛", category: "adjectives"},
+            {word: "건강하다", meaning: "健康", category: "adjectives"},
+            {word: "시끄럽다", meaning: "吵闹", category: "adjectives"},
+            {word: "조용하다", meaning: "安静", category: "adjectives"},
+            {word: "행복하다", meaning: "快乐", category: "adjectives"},
+            {word: "슬프다", meaning: "悲伤", category: "adjectives"},
+            {word: "아름답다", meaning: "美丽", category: "adjectives"},
+            {word: "못생기다", meaning: "丑陋", category: "adjectives"},
+            {word: "귀머거리", meaning: "聋人", category: "adjectives"},
+            {word: "맹인", meaning: "盲人", category: "adjectives"},
+            {word: "착하다", meaning: "善良", category: "adjectives"},
+            {word: "가난하다", meaning: "贫穷", category: "adjectives"},
+            {word: "부유하다", meaning: "富有", category: "adjectives"},
+            {word: "두껍다", meaning: "厚", category: "adjectives"},
+            {word: "얇다", meaning: "薄", category: "adjectives"},
+            {word: "비싸다", meaning: "贵", category: "adjectives"},
+            {word: "싸다", meaning: "便宜", category: "adjectives"},
+            {word: "평탄하다", meaning: "平坦", category: "adjectives"},
+            {word: "구부러지다", meaning: "弯曲", category: "adjectives"},
+            {word: "끼다", meaning: "戴", category: "adjectives"},
+            {word: "헐렁하다", meaning: "宽松", category: "adjectives"},
+            {word: "놉다", meaning: "高", category: "adjectives"},
+            {word: "낮다", meaning: "低", category: "adjectives"},
+            {word: "딱딱하다", meaning: "硬", category: "adjectives"},
+            {word: "부드럽다", meaning: "软", category: "adjectives"},
+            {word: "깊다", meaning: "深", category: "adjectives"},
+            {word: "얕다", meaning: "浅", category: "adjectives"},
+            {word: "깨끗하다", meaning: "干净", category: "adjectives"},
+            {word: "더럽다", meaning: "脏", category: "adjectives"},
+            {word: "힘이 세다", meaning: "强壮", category: "adjectives"},
+            {word: "약하다", meaning: "弱", category: "adjectives"},
+            {word: "살다", meaning: "活", category: "adjectives"},
+            {word: "무겁다", meaning: "重", category: "adjectives"},
+            {word: "가볍다", meaning: "轻", category: "adjectives"},
+            {word: "어둡다", meaning: "暗", category: "adjectives"},
+            {word: "밝다", meaning: "亮", category: "adjectives"},
+            {word: "인기가 많다", meaning: "受欢迎", category: "adjectives"},
+        ];
+
+        // 音变规则映射表 - 包含所有600个单词的音变形式
+        const soundChangeMap = {
+            // 动物
+            "개": "개",
+            "고양이": "고양이",
+            "물고기": "물꼬기",
+            "새": "새",
+            "소": "소",
+            "쥐": "쥐",
+            "말": "말",
+            "날개": "날개",
+            "동물": "동물",
+
+            // 交通工具
+            "기차": "기차",
+            "비행기": "비행기",
+            "차": "차",
+            "트럭": "트럭",
+            "자전거": "자전거",
+            "버스": "버스",
+            "배": "배",
+            "선박": "선박",
+            "타이어": "타이어",
+            "기름": "기름",
+            "엔진": "엔진",
+            "기차표": "기차표",
+            "교통": "교통",
+
+            // 场所
+            "도시": "도시",
+            "집": "집",
+            "길": "길",
+            "도로": "도로",
+            "공항": "공항",
+            "기차역": "기차역",
+            "다리": "다리",
+            "호텔": "호텔",
+            "식당": "식당",
+            "농장": "농장",
+            "재판소": "재판소",
+           "학교": "학교",
+            "사무실": "사무실",
+            "방": "방",
+            "마을": "마을",
+            "대학교": "대학교",
+            "클럽": "클럽",
+            "술집": "술찝",
+            "공원": "공원",
+            "캠프": "캠프",
+            "가게": "가게",
+            "극장": "극장",
+            "도서관": "도서관",
+            "병원": "병원",
+            "교회": "교회",
+            "은행": "은행",
+
+            // 颜色
+            "빨간색": "빨간색",
+            "초록색": "초록색",
+            "파랑색": "파랑색",
+            "노랑색": "노랑색",
+            "곤색": "곤색",
+            "분홍색": "분홍색",
+            "갈색": "갈색",
+            "오렌지색": "오렌지색",
+            "검은색": "거믄색",
+            "하얀색": "하얀색",
+            "회색": "회색",
+            "색깔": "색깔",
+
+            // 称呼
+            "저": "저",
+            "나": "나",
+            "그": "그",
+            "우리": "우리",
+            "상대방": "상대방",
+            "저의": "저의",
+            "내": "내",
+            "당신": "당신",
+            "내가": "내가",
+            "네가": "네가",
+            "너희들": "너희들",
+            "아들": "아들",
+            "딸": "딸",
+            "엄마": "엄마",
+            "아빠": "아빠",
+            "부모님": "부모님",
+            "애기": "애기",
+            "남자": "남자",
+            "여자": "여자",
+            "형": "형",
+            "누나": "누나",
+            "오빠": "오빠",
+            "언니": "언니",
+            "할아버지": "하라버지",
+            "할머니": "할머니",
+            "남편": "남편",
+            "아내": "아내",
+            "옆집 사람": "엽찝 사름",
+            "여자아이": "여자아이",
+            "남자아이": "남자아이",
+            "성인": "성인",
+            "인간": "인간",
+            "친구": "친구",
+            "피해자": "피해자",
+            "선수": "선수",
+            "팬": "팬",
+            "군중": "군중",
+            "사람": "사람",
+
+            // 职业
+            "선생님": "선생님",
+            "학생": "학쌩",
+            "변호사": "변호사",
+            "의사": "의사",
+            "환자": "환자",
+            "웨이터": "웨이터",
+            "비서": "비서",
+            "신부님": "신부님",
+            "경찰": "경찰",
+            "군대": "군대",
+            "군인": "군인",
+            "예술가": "예술가",
+            "저자": "저자",
+            "매니저": "매니저",
+            "기자": "기자",
+            "배우": "배우",
+            "직업": "직업",
+            "왕": "왕",
+            "여왕": "여왕",
+            "대통령": "대통령",
+
+            // 食物饮料
+            "커피": "커피",
+            "차": "차",
+            "맥주": "맥쭈",
+            "주스": "주쓰",
+            "물": "물",
+            "우유": "우유",
+            "음료수": "음뇨수",
+            "계란": "계란",
+            "치즈": "치즈",
+            "국물": "궁물",
+            "케이크": "케이크",
+            "닭": "닥",
+            "돼지고기": "돼지고기",
+            "소고기": "소고기",
+            "사과": "사과",
+            "바나나": "바나나",
+            "오렌지": "오렌지",
+            "레몬": "레몬",
+            "옥수수": "옥쑤수",
+            "쌀": "쌀",
+            "밥": "밥",
+            "식용유": "식용유",
+            "씨": "씨",
+            "칼": "칼",
+            "숟가락": "숟까락",
+            "포크": "포크",
+            "접시": "접씨",
+            "컵": "컵",
+            "아침": "아침",
+            "점심": "점심",
+            "저녁": "저녁",
+            "설탕": "설탕",
+            "소금": "소금",
+            "병": "병",
+            "음식": "음식",
+
+            // 家居物品
+            "책상": "책쌍",
+            "탁자": "탁짜",
+            "식탁": "식탁",
+            "의자": "의자",
+            "침대": "침대",
+            "꿈": "꿈",
+            "창문": "창문",
+            "문": "문",
+            "침실": "침실",
+            "부엌": "부엌",
+            "화장실": "화장실",
+            "연필": "연필",
+            "볼펜": "볼펜",
+            "사진": "사진",
+            "비누": "비누",
+            "책": "책",
+            "페이지": "페이지",
+            "열쇠": "열쇠",
+            "페인트": "페인트",
+            "편지": "편지",
+            "메모": "메모",
+            "벽": "벽",
+            "종이": "종이",
+            "천장": "천장",
+            "지붕": "지붕",
+            "수영장": "수영장",
+            "자물쇠": "자물쇠",
+            "전화기": "전화기",
+            "정원": "정원",
+            "마당": "마당",
+            "바늘": "바늘",
+            "가방": "가방",
+            "상자": "상자",
+            "선물": "선물",
+            "카드": "카드",
+            "반지": "반지",
+            "도구": "도구",
+            "시계": "시계",
+            "램프": "램프",
+            "휴대폰": "휴대폰",
+            "네트워크": "네트워크",
+            "컴퓨터": "컴퓨터",
+            "노트북": "노트북",
+            "화면": "화면",
+            "카메라": "카메라",
+            "텔레비전": "텔레비전",
+            "라디오": "라디오",
+
+            // 服装
+            "모자": "모자",
+            "드레스": "드레스",
+            "양복": "양복",
+            "치마": "치마",
+            "티셔츠": "티셔츠",
+            "바지": "바지",
+            "신발": "신발",
+            "주머니": "주머니",
+            "코트": "코트",
+            "옷": "옷",
+
+            // 身体部位
+            "머리": "머리",
+            "목": "목",
+            "얼굴": "얼굴",
+            "턱수염": "턱수염",
+            "머리카락": "머리카락",
+            "눈": "눈",
+            "입": "입",
+            "입술": "입쑬",
+            "코": "코",
+            "이빨": "이빨",
+            "귀": "귀",
+            "눈물": "눈물",
+            "혀": "혀",
+            "등": "등",
+            "허리": "허리",
+            "발가락": "발까락",
+            "손가락": "손가락",
+            "발": "발",
+            "손": "손",
+            "팔": "팔",
+            "어깨": "어깨",
+            "심장": "심장",
+            "피": "피",
+            "뇌": "뇌",
+            "무릎": "무릎",
+            "땀": "땀",
+            "병": "병",
+            "뼈": "뼈",
+            "목소리": "목쏘리",
+            "피부": "피부",
+            "몸": "몸",
+
+            // 自然
+            "바다": "바다",
+            "강": "강",
+            "산": "산",
+            "비": "비",
+            "눈": "눈",
+            "달": "달",
+            "세계": "세계",
+            "지구": "지구",
+            "숲": "숲",
+            "하늘": "하늘",
+            "식물": "싱물",
+            "바람": "바람",
+            "토양": "토양",
+            "꽃": "꼳",
+            "계곡": "계곡",
+            "뿌리": "뿌리",
+            "호수": "호수",
+            "별": "별",
+            "잔디": "잔디",
+            "나뭇잎": "나뭇잎",
+            "공기": "공기",
+            "모래": "모래",
+            "해변": "해변",
+            "파도": "파도",
+            "불": "불",
+            "어름": "어름",
+            "섬": "섬",
+            "언덕": "언덕",
+            "열": "열",
+            "자연": "자연",
+            
+            // 材料
+            "유리": "유리",
+            "금속": "금속",
+            "플라스틱": "플라스틱",
+            "나무": "나무",
+            "돌": "돌",
+            "다이아몬드": "다이아몬드",
+            "찰흙": "찰흑",
+            "먼지": "먼지",
+            "금": "금",
+            "구리": "구리",
+            "은": "은",
+            "재료": "재료",
+            
+            
+            // 数字
+            "공": "공",
+            "하나": "하나",
+            "둘": "둘",
+            "셋": "섿",
+            "넷": "넫",
+            "다섯": "다섣",
+            "여섯": "여섣",
+            "일곱": "일곱",
+            "여덟": "여덜",
+            "아홉": "아홉",
+            "열": "열",
+            "열하나": "열하나",
+            "열둘": "열둘",
+            "열셋": "열섿",
+            "열넷": "열넫",
+            "열다섯": "열다섣",
+            "열여섯": "여려섣",
+            "열일곱": "여릴곱",
+            "열여덟": "여려덜",
+            "열아홉": "여라홉",
+            "스물": "스물",
+            "스물한": "스물한",
+            "스물두": "스물두",
+            "서른": "서른",
+            "서른하나": "서른하나",
+            "서른둘": "서른둘",
+            "마흔": "마흔",
+            "마흔하나": "마흔하나",
+            "마흔둘": "마흔둘",
+            "쉰": "쉰",
+            "쉰하나": "쉰하나",
+            "쉰둘": "쉰둘",
+            "예순": "예순",
+            "예순하나": "예순하나",
+            "예순둘": "예순둘",
+            "여든": "여든",
+            "여든하나": "여든하나",
+            "여든둘": "여든둘",
+            "아흔": "아흔",
+            "아흔하나": "아흔하나",
+            "아흔둘": "아흔둘",
+            "백": "백",
+            "백하나": "백하나",
+            "백둘": "백뚤",
+            "백십": "백씹",
+            "백십일": "백씨빌",
+            "천": "천",
+            "천일": "처닐",
+            "만": "만",
+            "십만": "심만",
+            "백만": "뱅만",
+            "천만": "천만",
+            "억": "억",
+            "십억": "시벅",
+            "첫번째": "섣번째",
+            "둘째": "둘째",
+            "세번째": "세번째",
+            "네번째": "네번째",
+            "다섯번째": "다섣번째",
+            "번호": "번호",
+            
+            // 时间
+            "일월": "이뤌",
+            "이월": "이월",
+            "삼월": "사뭘",
+            "사월": "사월",
+            "오월": "오월",
+            "유월": "유월",
+            "칠월": "치뤌",
+            "팔월": "파뤌",
+            "구월": "구월",
+            "시월": "시월",
+            "십일월": "시비뤌",
+            "십이월": "시비월",
+            "월요일": "워료일",
+            "화요일": "화요일",
+            "수요일": "수요일",
+            "목요일": "모교일",
+            "금요일": "그묘일",
+            "토요일": "토요일",
+            "일요일": "이료일",
+            "년": "년",
+            "달": "달",
+            "시간": "시간",
+            "분": "분",
+            "밤": "밤",
+            "여름": "여름",
+            "봄": "봄",
+            "겨울": "겨울",
+            "가을": "가을",
+            "계절": "계절",
+
+            // 方位
+            "위에": "위에",
+            "아래": "아래",
+            "측면": "층면",
+            "뒷면": "뒨면",
+            "안에": "아네",
+            "밖에": "바께",
+            "왼쪽": "왼쪽",
+            "오른쪽": "오른쪽",
+            "곧장": "곧짱",
+            "북쪽": "북쪽",
+            "남쪽": "남쪽",
+            "동쪽": "동쪽",
+            "서쪽": "서쪽",
+            "방향": "방향",
+
+            // 其他名词
+            "시장": "시장",
+            "나라": "나라",
+            "건물": "건물",
+            "바닥": "바닥",
+            "공간": "공간",
+            "위치": "위치",
+            "얼룩": "얼룩",
+            "종교": "종교",
+            "천국": "천국",
+            "지옥": "지옥",
+            "죽음": "죽음",
+            "약": "약",
+            "돈": "돈",
+            "원": "원",
+            "지폐": "지폐",
+            "결혼": "결혼",
+            "결혼식": "결혼식",
+            "팀": "팀",
+            "인종": "인종",
+            "섹스": "쎅쓰",
+            "성별": "성별",
+            "살인": "사린",
+            "교도소": "교도소",
+            "기술": "기술",
+            "정력": "정력",
+            "전쟁": "전쟁",
+            "평화": "평화",
+            "공격": "공격",
+            "선거": "선거",
+            "잡지": "잡찌",
+            "신문": "신문",
+            "독": "독",
+            "총": "총",
+            "스포츠": "스포츠",
+            "경주": "경주",
+            "운동": "운동",
+            "공": "공",
+            "게임": "게임",
+            "가격": "가격",
+            "계약서": "게약써",
+            "마약": "마약",
+            "간판": "간판",
+            "과학": "과학",
+            "하느님": "하느님",
+            "밴드": "밴드",
+            "노래": "노래",
+            "악기": "악끼",
+            "음악": "으막",
+            "영화": "영화",
+            "미술": "미술",
+            "미터": "미터",
+            "센티미터": "센티미터",
+            "킬로미터": "킬로미터",
+            "반": "반",
+            "서클": "서클",
+            "정사각형": "정사가켱",
+            "온도": "온도",
+            "날짜": "날짜",
+            "무게": "무게",
+            "가장자리": "가장자리",
+            "지도": "지도",
+            "점": "점",
+            "자음": "자음",
+            "모음": "모음",
+            "가벼운": "가벼운",
+            "소리": "소리",
+            "네": "네",
+            "아니요": "아니요",
+            "조각": "조각",
+            "아픔": "아픔",
+            "상처": "상처",
+            "구멍": "구멍",
+            "이미지": "이미지",
+            "패턴": "패턴",
+            "명사": "명사",
+            "동사": "동사",
+            "형용사": "형용사",
+            
+            // 动词
+            "일하다": "이라다",
+            "놀다": "놀다",
+            "걷다": "걷따",
+            "뛰다": "뛰다",
+            "운전하다": "운저나다",
+            "날다": "날다",
+            "수영하다": "수영하다",
+            "가다": "가다",
+            "멈추다": "멈추다",
+            "따르다": "따르다",
+            "생각하다": "생가카다",
+            "말하다": "마라다",
+            "먹다": "먹따",
+            "마시다": "마시다",
+            "죽이다": "주기다",
+            "죽다": "죽따",
+            "웃다": "웃따",
+            "울다": "울다",
+            "사다": "사다",
+            "지불하다": "지부라다",
+            "팔다": "팔다",
+            "쏘다": "쏘다",
+            "배우다": "배우다",
+            "점프하다": "점프하다",
+            "냄새를 맡다": "냄새를 맏따",
+            "듣다": "듣따",
+            "맛보다": "맏뽀다",
+            "보다": "보다",
+            "만지다": "만지다",
+            "뽀뽀하다": "뽀뽀하다",
+            "불타다": "불타다",
+            "녹다": "녹따",
+            "파다": "파다",
+            "폭발하다": "폭바라다",
+            "앉다": "안따",
+            "서다": "서다",
+            "사랑하다": "사랑하다",
+            "지나가다": "지나가다",
+            "자르다": "자르다",
+            "싸우다": "싸우다",
+            "눕다": "눕따",
+            "춤추다": "춤추다",
+            "자다": "자다",
+            "깨다": "깨다",
+            "노래하다": "노래하다",
+            "세다": "세다",
+            "결혼하다": "결혼하다",
+            "기도하다": "기도하다",
+            "이기다": "이기다",
+            "지다": "지다",
+            "섞다": "섣따",
+            "구부리다": "구부리다",
+            "씻다": "씯따",
+            "요리하다": "요리하다",
+            "열다": "열다",
+            "닫다": "닫따",
+            "쓰다": "쓰다",
+            "부르다": "부르다",
+            "돌다": "돌다",
+            "건설하다": "건서라다",
+            "가르치다": "가르치다",
+            "자라다": "자라다",
+            "그리다": "그리다",
+            "먹이다": "머기다",
+            "잡다": "잡따",
+            "던지다": "던지다",
+            "청소하다": "청소하다",
+            "찾다": "찯따",
+            "넘어지다": "너머지다",
+            "밀다": "밀다",
+            "당기다": "당기다",
+            "들다": "들다",
+            "망가지다": "망가지다",
+            "깨지다": "깨지다",
+            "입다": "입따",
+            "흔들다": "흔들다",
+            "서명하다": "서명하다",
+            "패다": "패다",
+            "들어올리다": "드러올리다",
+            
+            // 形容词
+            "길다": "길다",
+            "짧다": "짤따",
+            "키가 크다": "키가 크다",
+            "키가 작다": "키가 작다",
+            "넓다": "널따",
+            "크다": "크다",
+            "작다": "작다",
+            "느리다": "느리다",
+            "빠르다": "빠르다",
+            "뜨겁다": "뜨겁따",
+            "차겁다": "차겁따",
+            "따뜻하다": "따뜨타다",
+            "선선하다": "선선하다",
+            "새롭다": "새롭다",
+            "오래되다": "오래되다",
+            "젊다": "점따",
+            "늙다": "늑따",
+            "좋다": "조타",
+            "나쁘다": "나쁘다",
+            "젖다": "젇따",
+            "건조하다": "건조하다",
+            "아프다": "아프다",
+            "건강하다": "건강하다",
+            "시끄럽다": "시끄럽따",
+            "조용하다": "조용하다",
+            "행복하다": "행복하다",
+            "슬프다": "슬프다",
+            "아름답다": "아름답따",
+            "못생기다": "못생기다",
+            "착하다": "차카다",
+            "가난하다": "가난하다",
+            "부유하다": "부유하다",
+            "두껍다": "두껍따",
+            "얇다": "얄따",
+            "비싸다": "비싸다",
+            "싸다": "싸다",
+            "평탄하다": "평탄하다",
+            "구부러지다": "구부러지다",
+            "끼다": "끼다",
+            "헐렁하다": "헐렁하다",
+            "놉다": "놉따",
+            "낮다": "낮따",
+            "딱딱하다": "딱딱하다",
+            "부드럽다": "부드럽따",
+            "깊다": "깁따",
+            "얕다": "얕따",
+            "깨끗하다": "깨끗하다",
+            "더럽다": "더럽따",
+            "힘이 세다": "히미 세다",
+            "약하다": "야카다",
+            "살다": "살다",
+            "무겁다": "무겁따",
+            "가볍다": "가볍따",
+            "어둡다": "어둡따",
+            "밝다": "박따",
+            "인기가 많다": "인기가 만타",
+        };
+
+        // 游戏状态
+        let gameState = {
+            currentWord: {},
+            correctPronunciation: '',
+            correctMeaning: '',
+            pronunciationOptions: [],
+            meaningOptions: [],
+            currentStage: 'pronunciation', // 'pronunciation' 或 'meaning'
+            score: 0,
+            correctCount: 0,
+            wrongCount: 0,
+            questionCount: 0,
+            answered: false,
+            currentCategory: 'all'
+        };
+
+        // DOM元素
+        const koreanWordEl = document.getElementById('koreanWord');
+        const optionsContainerEl = document.getElementById('optionsContainer');
+        const feedbackEl = document.getElementById('feedback');
+        const nextBtn = document.getElementById('nextBtn');
+        const explanationEl = document.getElementById('explanation');
+        const scoreEl = document.getElementById('score');
+        const correctCountEl = document.getElementById('correctCount');
+        const wrongCountEl = document.getElementById('wrongCount');
+        const questionCountEl = document.getElementById('questionCount');
+        const stage1El = document.getElementById('stage1');
+        const stage2El = document.getElementById('stage2');
+        const speakerBtn = document.getElementById('speakerBtn');
+        const categoryButtonsEl = document.getElementById('categoryButtons');
+
+        // 生成分类按钮
+        function generateCategoryButtons() {
+            categoryButtonsEl.innerHTML = '';
+            
+            for (const [categoryName, categoryId] of Object.entries(categories)) {
+                const button = document.createElement('div');
+                button.className = 'category-btn';
+                if (categoryId === 'all') {
+                    button.classList.add('active');
+                }
+                button.textContent = categoryName;
+                button.dataset.category = categoryId;
+                button.onclick = () => selectCategory(categoryId);
+                categoryButtonsEl.appendChild(button);
+            }
+        }
+
+        // 选择分类
+        function selectCategory(categoryId) {
+            // 更新按钮状态
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.category === categoryId) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            // 更新游戏状态
+            gameState.currentCategory = categoryId;
+            
+            // 重置游戏统计
+            resetStats();
+            
+            // 生成题目
+            generateQuestion();
+        }
+
+        // 重置统计信息
+        function resetStats() {
+            gameState.score = 0;
+            gameState.correctCount = 0;
+            gameState.wrongCount = 0;
+            gameState.questionCount = 0;
+            updateStats();
+        }
+
+        // 语音合成函数
+        function speakKorean(text) {
+            if (!('speechSynthesis' in window)) {
+                alert('您的浏览器不支持语音合成功能，请使用现代浏览器如Chrome、Edge或Firefox');
+                return;
+            }
+
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'ko-KR';
+            utterance.rate = 0.9;
+            utterance.pitch = 1.0;
+            
+            speakerBtn.classList.add('playing');
+            
+            utterance.onend = function() {
+                speakerBtn.classList.remove('playing');
+            };
+            
+            utterance.onerror = function(event) {
+                console.error('语音合成错误:', event);
+                speakerBtn.classList.remove('playing');
+                //alert('发音失败，请检查浏览器设置或网络连接');
+            };
+            
+            speechSynthesis.speak(utterance);
+        }
+
+        // 根据当前分类获取随机韩语单词
+        function getRandomKoreanWord() {
+            let wordPool = koreanWords;
+            
+            // 如果选择了特定分类，过滤单词
+            if (gameState.currentCategory !== 'all') {
+                wordPool = koreanWords.filter(word => word.category === gameState.currentCategory);
+            }
+            
+            return wordPool[Math.floor(Math.random() * wordPool.length)];
+        }
+
+        // 获取单词的实际发音（考虑音变）
+        function getActualPronunciation(word) {
+            if (soundChangeMap[word]) {
+                return soundChangeMap[word];
+            }
+            
+            return word;
+        }
+
+        // 生成发音干扰项
+        function generatePronunciationDistractors(correctPronunciation, word) {
+            const distractors = [];
+            
+            const allPronunciations = Object.values(soundChangeMap);
+            const uniquePronunciations = [...new Set(allPronunciations)];
+            
+            const commonErrors = [
+                word,
+                word.split('').reverse().join(''),
+                word.replace(/[가-힣]/g, char => {
+                    const similarMap = {
+                        'ㄱ': 'ㅋ', 'ㅋ': 'ㄱ',
+                        'ㄷ': 'ㅌ', 'ㅌ': 'ㄷ',
+                        'ㅂ': 'ㅍ', 'ㅍ': 'ㅂ',
+                        'ㅈ': 'ㅊ', 'ㅊ': 'ㅈ'
+                    };
+                    return similarMap[char] || char;
+                })
+            ];
+            
+            const allPossible = [...uniquePronunciations, ...commonErrors];
+            
+            while (distractors.length < 2) {
+                const randomIndex = Math.floor(Math.random() * allPossible.length);
+                const randomPronunciation = allPossible[randomIndex];
+                
+                if (randomPronunciation !== correctPronunciation && 
+                    !distractors.includes(randomPronunciation) &&
+                    randomPronunciation.length > 0) {
+                    distractors.push(randomPronunciation);
+                }
+            }
+            
+            return distractors;
+        }
+
+        // 生成词义干扰项
+        function generateMeaningDistractors(correctMeaning) {
+            const distractors = [];
+            let allMeanings = koreanWords.map(word => word.meaning);
+            
+            // 如果选择了特定分类，只从该分类中生成干扰项
+            if (gameState.currentCategory !== 'all') {
+                allMeanings = koreanWords
+                    .filter(word => word.category === gameState.currentCategory)
+                    .map(word => word.meaning);
+            }
+            
+            const uniqueMeanings = [...new Set(allMeanings)];
+            
+            while (distractors.length < 2) {
+                const randomIndex = Math.floor(Math.random() * uniqueMeanings.length);
+                const randomMeaning = uniqueMeanings[randomIndex];
+                
+                if (randomMeaning !== correctMeaning && 
+                    !distractors.includes(randomMeaning)) {
+                    distractors.push(randomMeaning);
+                }
+            }
+            
+            return distractors;
+        }
+
+        // 生成新题目
+        function generateQuestion() {
+            gameState.answered = false;
+            gameState.questionCount++;
+            gameState.currentStage = 'pronunciation';
+            
+            // 更新阶段指示器
+            stage1El.classList.add('active');
+            stage2El.classList.remove('active');
+            
+            // 获取随机韩语单词
+            gameState.currentWord = getRandomKoreanWord();
+            koreanWordEl.textContent = gameState.currentWord.word;
+            
+            // 获取正确发音（考虑音变）
+            gameState.correctPronunciation = getActualPronunciation(gameState.currentWord.word);
+            gameState.correctMeaning = gameState.currentWord.meaning;
+            
+            // 生成发音干扰项
+            const pronunciationDistractors = generatePronunciationDistractors(
+                gameState.correctPronunciation, 
+                gameState.currentWord.word
+            );
+            
+            // 组合发音选项
+            gameState.pronunciationOptions = [
+                gameState.correctPronunciation, 
+                ...pronunciationDistractors
+            ];
+            
+            // 随机排序发音选项
+            shuffleArray(gameState.pronunciationOptions);
+            
+            // 生成词义干扰项
+            const meaningDistractors = generateMeaningDistractors(gameState.correctMeaning);
+            
+            // 组合词义选项
+            gameState.meaningOptions = [
+                gameState.correctMeaning, 
+                ...meaningDistractors
+            ];
+            
+            // 随机排序词义选项
+            shuffleArray(gameState.meaningOptions);
+            
+            // 更新选项显示
+            updateOptions();
+            
+            // 重置反馈
+            feedbackEl.textContent = '';
+            feedbackEl.className = 'feedback';
+            explanationEl.textContent = '提示：注意韩语中的音变现象，如连音化、鼻音化、送气化等';
+            
+            // 隐藏下一题按钮
+            nextBtn.style.display = 'none';
+            
+            // 更新统计信息
+            updateStats();
+        }
+
+        // 数组随机排序
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        // 更新选项显示
+        function updateOptions() {
+            optionsContainerEl.innerHTML = '';
+            
+            const options = gameState.currentStage === 'pronunciation' 
+                ? gameState.pronunciationOptions 
+                : gameState.meaningOptions;
+            
+            options.forEach((option, index) => {
+                const button = document.createElement('div');
+                button.className = 'option';
+                button.textContent = `${String.fromCharCode(65 + index)}. ${option}`;
+                button.onclick = () => checkAnswer(option);
+                optionsContainerEl.appendChild(button);
+            });
+        }
+
+        // 检查答案
+        function checkAnswer(selectedAnswer) {
+            if (gameState.answered) return;
+            
+            gameState.answered = true;
+            const buttons = document.querySelectorAll('.option');
+            let isCorrect = false;
+            
+            const correctAnswer = gameState.currentStage === 'pronunciation' 
+                ? gameState.correctPronunciation 
+                : gameState.correctMeaning;
+            
+            buttons.forEach(button => {
+                const buttonAnswer = button.textContent.split('. ')[1];
+                
+                if (buttonAnswer === correctAnswer) {
+                    button.classList.add('correct');
+                }
+                
+                if (buttonAnswer === selectedAnswer) {
+                    if (selectedAnswer === correctAnswer) {
+                        button.classList.add('correct');
+                        isCorrect = true;
+                    } else {
+                        button.classList.add('incorrect');
+                    }
+                }
+            });
+            
+            if (isCorrect) {
+                feedbackEl.textContent = '✓ 正确！';
+                feedbackEl.className = 'feedback correct-feedback';
+                
+                if (gameState.currentStage === 'pronunciation') {
+                    // 进入词义选择阶段
+                    gameState.currentStage = 'meaning';
+                    stage1El.classList.remove('active');
+                    stage2El.classList.add('active');
+                    updateOptions();
+                    gameState.answered = false;
+                    feedbackEl.textContent = '✓ 读音正确！现在选择中文意思';
+                } else {
+                    // 两个阶段都完成
+                    gameState.score += 10;
+                    gameState.correctCount++;
+                    nextBtn.style.display = 'block';
+                    
+                    explanationEl.innerHTML = `
+                        <strong>单词解析：</strong><br>
+                        韩语: ${gameState.currentWord.word}<br>
+                        实际发音: ${gameState.correctPronunciation}<br>
+                        中文意思: ${gameState.correctMeaning}
+                    `;
+                }
+            } else {
+                feedbackEl.textContent = '✗ 错误！';
+                feedbackEl.className = 'feedback incorrect-feedback';
+                gameState.wrongCount++;
+                nextBtn.style.display = 'block';
+                
+                if (gameState.currentStage === 'pronunciation') {
+                    explanationEl.innerHTML = `
+                        <strong>正确发音：${gameState.correctPronunciation}</strong><br>
+                        请记住这个读音，继续努力！
+                    `;
+                } else {
+                    explanationEl.innerHTML = `
+                        <strong>正确答案：${gameState.correctMeaning}</strong><br>
+                        请记住这个意思，继续努力！
+                    `;
+                }
+            }
+            
+            updateStats();
+        }
+
+        // 更新统计信息
+        function updateStats() {
+            scoreEl.textContent = gameState.score;
+            correctCountEl.textContent = gameState.correctCount;
+            wrongCountEl.textContent = gameState.wrongCount;
+            questionCountEl.textContent = gameState.questionCount;
+        }
+
+        // 初始化游戏
+        function initGame() {
+            generateCategoryButtons();
+            
+            // 默认选择"全部"类别并生成题目
+            generateQuestion();
+            
+            nextBtn.onclick = generateQuestion;
+            
+            // 添加喇叭按钮点击事件
+            speakerBtn.onclick = function() {
+                speechSynthesis.cancel();
+                
+                // 播放当前单词的音变发音
+                speakKorean(gameState.correctPronunciation);
+            };
+        }
+
+        // 页面加载时开始游戏
+        window.onload = initGame;
+    </script>
+</body>
+</html>

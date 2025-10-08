@@ -3,372 +3,231 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>韩语发音测验</title>
+    <title>韩语学习练习中心</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
         body {
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 20px;
+            color: #333;
         }
         
-        .quiz-container {
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            max-width: 500px;
+        .container {
+            max-width: 1000px;
             width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            padding: 40px;
+        }
+        
+        header {
             text-align: center;
+            margin-bottom: 40px;
         }
         
         h1 {
-            color: #333;
-            margin-bottom: 30px;
-            font-size: 2em;
-        }
-        
-        .question {
-            font-size: 3em;
-            margin: 30px 0;
+            font-size: 2.8rem;
             color: #2c3e50;
-            font-weight: bold;
+            margin-bottom: 10px;
         }
         
-        .sound-type {
-            font-size: 1.2em;
+        .subtitle {
+            font-size: 1.2rem;
             color: #7f8c8d;
-            margin-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .welcome-text {
+            font-size: 1.1rem;
+            color: #5d6d7e;
+            max-width: 700px;
+            margin: 0 auto 30px;
+            line-height: 1.6;
         }
         
         .options-container {
             display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin: 30px 0;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 40px;
         }
         
-        .option-btn {
-            padding: 15px 20px;
-            font-size: 1.2em;
-            border: 2px solid #bdc3c7;
-            border-radius: 10px;
+        .option-card {
             background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
             cursor: pointer;
-            transition: all 0.3s ease;
+            border: 2px solid transparent;
         }
         
-        .option-btn:hover {
-            background: #f8f9fa;
+        .option-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
             border-color: #3498db;
         }
         
-        .option-btn.correct {
-            background: #2ecc71;
-            color: white;
-            border-color: #27ae60;
+        .card-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: #3498db;
         }
         
-        .option-btn.wrong {
-            background: #e74c3c;
-            color: white;
-            border-color: #c0392b;
-        }
-        
-        .result {
-            font-size: 1.3em;
-            margin: 20px 0;
-            min-height: 30px;
-        }
-        
-        .result.correct {
-            color: #2ecc71;
-        }
-        
-        .result.wrong {
-            color: #e74c3c;
-        }
-        
-        .stats {
-            display: flex;
-            justify-content: space-around;
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid #ecf0f1;
-        }
-        
-        .stat-item {
-            text-align: center;
-        }
-        
-        .stat-value {
-            font-size: 1.5em;
-            font-weight: bold;
+        .card-title {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
             color: #2c3e50;
         }
         
-        .stat-label {
-            font-size: 0.9em;
+        .card-description {
+            font-size: 1rem;
+            color: #7f8c8d;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .card-btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background 0.3s;
+            text-decoration: none;
+        }
+        
+        .card-btn:hover {
+            background: #2980b9;
+        }
+        
+        .features {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 50px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .feature {
+            text-align: center;
+            max-width: 200px;
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            color: #3498db;
+            margin-bottom: 15px;
+        }
+        
+        .feature-title {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        
+        .feature-text {
+            font-size: 0.9rem;
             color: #7f8c8d;
         }
         
-        @media (max-width: 480px) {
-            .quiz-container {
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
                 padding: 20px;
             }
             
-            .question {
-                font-size: 2.5em;
+            h1 {
+                font-size: 2.2rem;
             }
             
-            .option-btn {
-                padding: 12px 15px;
-                font-size: 1.1em;
+            .options-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .option-card {
+                width: 100%;
             }
         }
     </style>
 </head>
 <body>
-    <div class="quiz-container">
-        <h1>🇰🇷 韩语发音测验</h1>
+    <div class="container">
+        <header>
+            <h1>🇰🇷 韩语学习练习中心</h1>
+            <div class="subtitle">选择您想进行的练习类型</div>
+            <div class="welcome-text">
+                欢迎来到SF韩语练习中心！我们提供两种不同类型的练习，帮助您提高韩语水平。无论是初学者还是进阶学习者，都能找到适合自己的练习方式。
+            </div>
+        </header>
         
-        <div class="sound-type" id="soundType"></div>
-        <div class="question" id="question"></div>
-        
-        <div class="options-container" id="optionsContainer">
-            <!-- 选项将通过JavaScript动态生成 -->
+        <div class="options-container">
+            <div class="option-card" onclick="location.href='character-quiz.html'">
+                <div class="card-icon">🔤</div>
+                <h2 class="card-title">韩语文字练习</h2>
+                <p class="card-description">
+                    练习韩语字母的发音和识别。通过选择正确的罗马音来匹配显示的韩文字母，巩固韩语基础发音知识。
+                </p>
+                <a href="character-quiz.html" class="card-btn">开始练习</a>
+            </div>
+            
+            <div class="option-card" onclick="location.href='word-quiz.html'">
+                <div class="card-icon">📝</div>
+                <h2 class="card-title">韩语单词练习</h2>
+                <p class="card-description">
+                    练习韩语单词的音变规则和词义。通过选择正确读音和中文意思，掌握韩语发音规律和词汇。
+                </p>
+                <a href="word-quiz.html" class="card-btn">开始练习</a>
+            </div>
         </div>
         
-        <div class="result" id="result"></div>
-        
-        <div class="stats">
-            <div class="stat-item">
-                <div class="stat-value" id="score">0</div>
-                <div class="stat-label">得分</div>
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">🎯</div>
+                <h3 class="feature-title">目标明确</h3>
+                <p class="feature-text">每种练习都有明确的学习目标，帮助您高效学习</p>
             </div>
-            <div class="stat-item">
-                <div class="stat-value" id="correctCount">0</div>
-                <div class="stat-label">正确</div>
+            <div class="feature">
+                <div class="feature-icon">📊</div>
+                <h3 class="feature-title">进度追踪</h3>
+                <p class="feature-text">实时统计正确率和得分，让您清楚了解学习进展</p>
             </div>
-            <div class="stat-item">
-                <div class="stat-value" id="wrongCount">0</div>
-                <div class="stat-label">错误</div>
+            <div class="feature">
+                <div class="feature-icon">🔊</div>
+                <h3 class="feature-title">发音辅助</h3>
+                <p class="feature-text">提供单词发音功能，帮助您掌握正确发音</p>
             </div>
         </div>
+        
+        <footer>
+            <p>SF韩语 © 2025 | 设计用于帮助韩语学习者提高语言技能</p>
+        </footer>
     </div>
-
-    <script>
-        // 韩语发音数据
-        const koreanSounds = {
-            consonants: {
-                'ㄱ': { roman: 'g', name: '기역' },
-                'ㄲ': { roman: 'kk', name: '쌍기역' },
-                'ㄴ': { roman: 'n', name: '니은' },
-                'ㄷ': { roman: 'd', name: '디귿' },
-                'ㄸ': { roman: 'tt', name: '쌍디귿' },
-                'ㄹ': { roman: 'r', name: '리을' },
-                'ㅁ': { roman: 'm', name: '미음' },
-                'ㅂ': { roman: 'b', name: '비읍' },
-                'ㅃ': { roman: 'pp', name: '쌍비읍' },
-                'ㅅ': { roman: 's', name: '시옷' },
-                'ㅆ': { roman: 'ss', name: '쌍시옷' },
-                'ㅇ': { roman: '', name: '이응' },
-                'ㅈ': { roman: 'j', name: '지읒' },
-                'ㅉ': { roman: 'jj', name: '쌍지읒' },
-                'ㅊ': { roman: 'ch', name: '치읓' },
-                'ㅋ': { roman: 'k', name: '키읔' },
-                'ㅌ': { roman: 't', name: '티읕' },
-                'ㅍ': { roman: 'p', name: '피읖' },
-                'ㅎ': { roman: 'h', name: '히읗' }
-            },
-            vowels: {
-                'ㅏ': { roman: 'a', name: '아' },
-                'ㅐ': { roman: 'ae', name: '애' },
-                'ㅑ': { roman: 'ya', name: '야' },
-                'ㅒ': { roman: 'yae', name: '얘' },
-                'ㅓ': { roman: 'eo', name: '어' },
-                'ㅔ': { roman: 'e', name: '에' },
-                'ㅕ': { roman: 'yeo', name: '여' },
-                'ㅖ': { roman: 'ye', name: '예' },
-                'ㅗ': { roman: 'o', name: '오' },
-                'ㅘ': { roman: 'wa', name: '와' },
-                'ㅙ': { roman: 'wae', name: '왜' },
-                'ㅚ': { roman: 'oe', name: '외' },
-                'ㅛ': { roman: 'yo', name: '요' },
-                'ㅜ': { roman: 'u', name: '우' },
-                'ㅝ': { roman: 'wo', name: '워' },
-                'ㅞ': { roman: 'we', name: '웨' },
-                'ㅟ': { roman: 'wi', name: '위' },
-                'ㅠ': { roman: 'yu', name: '유' },
-                'ㅡ': { roman: 'eu', name: '으' },
-                'ㅢ': { roman: 'ui', name: '의' },
-                'ㅣ': { roman: 'i', name: '이' }
-            }
-        };
-
-        // 游戏状态
-        let currentState = {
-            currentSound: null,
-            correctAnswer: null,
-            options: [],
-            score: 0,
-            correctCount: 0,
-            wrongCount: 0
-        };
-
-        // DOM元素
-        const questionEl = document.getElementById('question');
-        const soundTypeEl = document.getElementById('soundType');
-        const optionsContainerEl = document.getElementById('optionsContainer');
-        const resultEl = document.getElementById('result');
-        const scoreEl = document.getElementById('score');
-        const correctCountEl = document.getElementById('correctCount');
-        const wrongCountEl = document.getElementById('wrongCount');
-
-        // 获取随机韩语音
-        function getRandomSound() {
-            const soundType = Math.random() > 0.5 ? 'consonants' : 'vowels';
-            const sounds = Object.keys(koreanSounds[soundType]);
-            const randomSound = sounds[Math.floor(Math.random() * sounds.length)];
-            return {
-                character: randomSound,
-                roman: koreanSounds[soundType][randomSound].roman,
-                type: soundType
-            };
-        }
-
-        // 生成选项
-        function generateOptions(correctRoman) {
-            const allRomans = new Set();
-            
-            // 收集所有罗马音
-            for (const soundType of ['consonants', 'vowels']) {
-                for (const soundData of Object.values(koreanSounds[soundType])) {
-                    if (soundData.roman) {
-                        allRomans.add(soundData.roman);
-                    }
-                }
-            }
-            
-            const romanArray = Array.from(allRomans);
-            const wrongOptions = [];
-            
-            // 选择两个错误选项
-            while (wrongOptions.length < 2) {
-                const randomRoman = romanArray[Math.floor(Math.random() * romanArray.length)];
-                if (randomRoman !== correctRoman && !wrongOptions.includes(randomRoman)) {
-                    wrongOptions.push(randomRoman);
-                }
-            }
-            
-            const options = [correctRoman, ...wrongOptions];
-            // 随机排序选项
-            for (let i = options.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [options[i], options[j]] = [options[j], options[i]];
-            }
-            
-            return options;
-        }
-
-        // 更新问题
-        function updateQuestion() {
-            const sound = getRandomSound();
-            currentState.currentSound = sound.character;
-            currentState.correctAnswer = sound.roman;
-            currentState.options = generateOptions(sound.roman);
-            
-            // 更新界面
-            questionEl.textContent = sound.character;
-            soundTypeEl.textContent = sound.type === 'consonants' ? '辅音' : '元音';
-            resultEl.textContent = '';
-            resultEl.className = 'result';
-            
-            // 生成选项按钮
-            optionsContainerEl.innerHTML = '';
-            currentState.options.forEach((option, index) => {
-                const button = document.createElement('button');
-                button.className = 'option-btn';
-                button.textContent = `${String.fromCharCode(65 + index)}. ${option}`;
-                button.onclick = () => checkAnswer(option);
-                optionsContainerEl.appendChild(button);
-            });
-        }
-
-        // 检查答案
-        function checkAnswer(selectedAnswer) {
-            const buttons = document.querySelectorAll('.option-btn');
-            let isCorrect = false;
-            
-            buttons.forEach(button => {
-                const buttonAnswer = button.textContent.split('. ')[1];
-                button.disabled = true;
-                
-                if (buttonAnswer === currentState.correctAnswer) {
-                    button.classList.add('correct');
-                }
-                
-                if (buttonAnswer === selectedAnswer) {
-                    if (selectedAnswer === currentState.correctAnswer) {
-                        button.classList.add('correct');
-                        isCorrect = true;
-                    } else {
-                        button.classList.add('wrong');
-                    }
-                }
-            });
-            
-            if (isCorrect) {
-                resultEl.textContent = '✓ 正确！';
-                resultEl.className = 'result correct';
-                currentState.score += 10;
-                currentState.correctCount++;
-                
-                // 立即进入下一题
-                setTimeout(updateQuestion, 500);
-            } else {
-                resultEl.textContent = '✗ 错误！';
-                resultEl.className = 'result wrong';
-                currentState.wrongCount++;
-                
-                // 2秒后允许重新选择
-                setTimeout(() => {
-                    buttons.forEach(button => {
-                        button.disabled = false;
-                        button.classList.remove('wrong');
-                    });
-                    resultEl.textContent = '请重新选择';
-                }, 2000);
-            }
-            
-            // 更新统计信息
-            updateStats();
-        }
-
-        // 更新统计信息
-        function updateStats() {
-            scoreEl.textContent = currentState.score;
-            correctCountEl.textContent = currentState.correctCount;
-            wrongCountEl.textContent = currentState.wrongCount;
-        }
-
-        // 初始化游戏
-        function initGame() {
-            updateQuestion();
-            updateStats();
-        }
-
-        // 页面加载时开始游戏
-        window.onload = initGame;
-    </script>
 </body>
 </html>
