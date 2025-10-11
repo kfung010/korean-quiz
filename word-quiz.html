@@ -1673,7 +1673,8 @@
             wrongCount: 0,
             questionCount: 0,
             answered: false,
-            currentCategory: 'all'
+            currentCategory: 'all',
+            recentWords: []
         };
 
         // DOM元素
@@ -1720,6 +1721,8 @@
             
             // 更新游戏状态
             gameState.currentCategory = categoryId;
+
+            gameState.recentWords = [];
             
             // 重置游戏统计
             resetStats();
@@ -1766,15 +1769,23 @@
 
         // 根据当前分类获取随机韩语单词
         function getRandomKoreanWord() {
-            let wordPool = koreanWords;
-            
-            // 如果选择了特定分类，过滤单词
-            if (gameState.currentCategory !== 'all') {
-                wordPool = koreanWords.filter(word => word.category === gameState.currentCategory);
-            }
-            
-            return wordPool[Math.floor(Math.random() * wordPool.length)];
-        }
+	        let wordPool = koreanWords;
+	        
+	        // 如果选择了特定分类，过滤单词
+	        if (gameState.currentCategory !== 'all') {
+	            wordPool = koreanWords.filter(word => word.category === gameState.currentCategory);
+	        }
+	        
+	        // 过滤掉最近3题中使用过的单词
+	        const availableWords = wordPool.filter(word => 
+	            !gameState.recentWords.includes(word.word)
+	        );
+	        
+	        // 如果没有可用单词（比如刚开始或单词很少），使用完整词库
+	        const finalWordPool = availableWords.length > 0 ? availableWords : wordPool;
+	        
+	        return finalWordPool[Math.floor(Math.random() * finalWordPool.length)];
+	    }
 
         // 获取单词的实际发音（考虑音变）
         function getActualPronunciation(word) {
@@ -1849,65 +1860,74 @@
             return distractors;
         }
 
-        // 生成新题目
-        function generateQuestion() {
-            gameState.answered = false;
-            gameState.questionCount++;
-            gameState.currentStage = 'pronunciation';
-            
-            // 更新阶段指示器
-            stage1El.classList.add('active');
-            stage2El.classList.remove('active');
-            
-            // 获取随机韩语单词
-            gameState.currentWord = getRandomKoreanWord();
-            koreanWordEl.textContent = gameState.currentWord.word;
-            
-            // 获取正确发音（考虑音变）
-            gameState.correctPronunciation = getActualPronunciation(gameState.currentWord.word);
-            gameState.correctMeaning = gameState.currentWord.meaning;
-            
-            // 生成发音干扰项
-            const pronunciationDistractors = generatePronunciationDistractors(
-                gameState.correctPronunciation, 
-                gameState.currentWord.word
-            );
-            
-            // 组合发音选项
-            gameState.pronunciationOptions = [
-                gameState.correctPronunciation, 
-                ...pronunciationDistractors
-            ];
-            
-            // 随机排序发音选项
-            shuffleArray(gameState.pronunciationOptions);
-            
-            // 生成词义干扰项
-            const meaningDistractors = generateMeaningDistractors(gameState.correctMeaning);
-            
-            // 组合词义选项
-            gameState.meaningOptions = [
-                gameState.correctMeaning, 
-                ...meaningDistractors
-            ];
-            
-            // 随机排序词义选项
-            shuffleArray(gameState.meaningOptions);
-            
-            // 更新选项显示
-            updateOptions();
-            
-            // 重置反馈
-            feedbackEl.textContent = '';
-            feedbackEl.className = 'feedback';
-            explanationEl.textContent = '提示：注意韩语中的音变现象，如连音化、鼻音化、送气化等';
-            
-            // 隐藏下一题按钮
-            nextBtn.style.display = 'none';
-            
-            // 更新统计信息
-            updateStats();
-        }
+         // 生成新题目
+	    function generateQuestion() {
+	        gameState.answered = false;
+	        gameState.questionCount++;
+	        gameState.currentStage = 'pronunciation';
+	        
+	        // 获取随机韩语单词（避免重复）
+	        gameState.currentWord = getRandomKoreanWord();
+	        
+	        // 将当前单词添加到最近使用列表
+	        gameState.recentWords.push(gameState.currentWord.word);
+	        
+	        // 保持最近使用列表最多包含3个单词
+	        if (gameState.recentWords.length > 3) {
+	            gameState.recentWords.shift(); // 移除最旧的单词
+	        }
+	        
+	        koreanWordEl.textContent = gameState.currentWord.word;
+	        
+	        // 获取正确发音（考虑音变）
+	        gameState.correctPronunciation = getActualPronunciation(gameState.currentWord.word);
+	        gameState.correctMeaning = gameState.currentWord.meaning;
+	        
+	        // 生成发音干扰项
+	        const pronunciationDistractors = generatePronunciationDistractors(
+	            gameState.correctPronunciation, 
+	            gameState.currentWord.word
+	        );
+	        
+	        // 组合发音选项
+	        gameState.pronunciationOptions = [
+	            gameState.correctPronunciation, 
+	            ...pronunciationDistractors
+	        ];
+	        
+	        // 随机排序发音选项
+	        shuffleArray(gameState.pronunciationOptions);
+	        
+	        // 生成词义干扰项
+	        const meaningDistractors = generateMeaningDistractors(gameState.correctMeaning);
+	        
+	        // 组合词义选项
+	        gameState.meaningOptions = [
+	            gameState.correctMeaning, 
+	            ...meaningDistractors
+	        ];
+	        
+	        // 随机排序词义选项
+	        shuffleArray(gameState.meaningOptions);
+	        
+	        // 更新阶段指示器
+	        stage1El.classList.add('active');
+	        stage2El.classList.remove('active');
+	        
+	        // 更新选项显示
+	        updateOptions();
+	        
+	        // 重置反馈
+	        feedbackEl.textContent = '';
+	        feedbackEl.className = 'feedback';
+	        explanationEl.textContent = '提示：注意韩语中的音变现象，如连音化、鼻音化、送气化等';
+	        
+	        // 隐藏下一题按钮
+	        nextBtn.style.display = 'none';
+	        
+	        // 更新统计信息
+	        updateStats();
+	    }
 
         // 数组随机排序
         function shuffleArray(array) {

@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>韩语句子翻译练习</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+        
+        header {
+            background: #2c3e50;
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.8;
+        }
+        
+        .quiz-area {
+            padding: 30px;
+        }
+        
+        .question-container {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        .korean-sentence {
+            font-size: 2.2rem;
+            margin: 20px 0;
+            color: #2c3e50;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            line-height: 1.4;
+        }
+        
+        .speaker-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .speaker-btn:hover {
+            background: #2980b9;
+            transform: scale(1.1);
+        }
+        
+        .speaker-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .speaker-btn.playing {
+            background: #e74c3c;
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .options-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .option {
+            padding: 18px;
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .option:hover {
+            background: #e9ecef;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .option.correct {
+            background: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+        
+        .option.incorrect {
+            background: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+        
+        .feedback {
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin: 20px 0;
+            min-height: 30px;
+        }
+        
+        .correct-feedback {
+            color: #28a745;
+        }
+        
+        .incorrect-feedback {
+            color: #dc3545;
+        }
+        
+        .next-btn {
+            display: block;
+            width: 200px;
+            margin: 0 auto;
+            padding: 14px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .next-btn:hover {
+            background: #2980b9;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            background: #f8f9fa;
+            padding: 15px;
+            border-top: 1px solid #dee2e6;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+        
+        .explanation {
+            background: #e9f7fe;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+        
+        @media (max-width: 768px) {
+            .korean-sentence {
+                font-size: 1.8rem;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .speaker-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🇰🇷 韩语句子翻译练习</h1>
+            <div class="subtitle">根据韩语句子选择正确的中文翻译</div>
+        </header>
+        
+        <div class="quiz-area">
+            <div class="question-container">
+                <button class="speaker-btn" id="speakerBtn">🔊</button>
+                <div class="korean-sentence" id="koreanSentence">한국어 문장</div>
+            </div>
+            
+            <div class="options-container" id="optionsContainer">
+                <!-- 选项将通过JavaScript动态生成 -->
+            </div>
+            
+            <div class="feedback" id="feedback"></div>
+            
+            <button class="next-btn" id="nextBtn">下一题</button>
+            
+            <div class="explanation" id="explanation">
+                提示：请根据韩语句子选择正确的中文翻译，注意韩语语法结构
+            </div>
+        </div>
+        
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-value" id="score">0</div>
+                <div class="stat-label">得分</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="correctCount">0</div>
+                <div class="stat-label">正确</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="wrongCount">0</div>
+                <div class="stat-label">错误</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="questionCount">0</div>
+                <div class="stat-label">题目</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 韩语句子数据 - 每种语法结构增加更多例句
+        const koreanSentences = [
+            // 最高阶陈述句终结词尾：有收音 + 습니다
+            {
+                korean: "저는 학생입니다.",
+                meaning: "我是学生。",
+                explanation: "最高阶陈述句终结词尾：有收音 + 습니다"
+            },
+            {
+                korean: "한국어를 공부합니다.",
+                meaning: "学习韩语。",
+                explanation: "最高阶陈述句终结词尾：有收音 + 습니다"
+            },
+            {
+                korean: "커피를 마십니다.",
+                meaning: "喝咖啡。",
+                explanation: "最高阶陈述句终结词尾：有收音 + 습니다"
+            },
+            
+            // 最高阶疑问句终结词尾：没有收音 + ㅂ니까
+            {
+                korean: "학교에 갑니까?",
+                meaning: "去学校吗？",
+                explanation: "最高阶疑问句终结词尾：没有收音 + ㅂ니까"
+            },
+            {
+                korean: "한국어를 공부합니까?",
+                meaning: "学习韩语吗？",
+                explanation: "最高阶疑问句终结词尾：没有收音 + ㅂ니까"
+            },
+            {
+                korean: "이 책을 읽습니까?",
+                meaning: "读这本书吗？",
+                explanation: "最高阶疑问句终结词尾：有收音 + 습니까"
+            },
+            
+            // 请VVV：有收音 + 으세요 / 没有收音 + 세요
+            {
+                korean: "책을 읽으세요.",
+                meaning: "请读书。",
+                explanation: "请VVV：有收音 + 으세요"
+            },
+            {
+                korean: "조용히 하세요.",
+                meaning: "请安静。",
+                explanation: "请VVV：没有收音 + 세요"
+            },
+            {
+                korean: "앉으세요.",
+                meaning: "请坐。",
+                explanation: "请VVV：有收音 + 으세요"
+            },
+            
+            // 请VVV（最高阶格式体）：有收音 + 으십시오 / 没有收音 + 십시오
+            {
+                korean: "여기 앉으십시오.",
+                meaning: "请坐这里。",
+                explanation: "请VVV（最高阶格式体）：有收音 + 으십시오"
+            },
+            {
+                korean: "들어오십시오.",
+                meaning: "请进来。",
+                explanation: "请VVV（最高阶格式体）：没有收音 + 십시오"
+            },
+            
+            // 请给我NNN：名词 + 주세요
+            {
+                korean: "물 주세요.",
+                meaning: "请给我水。",
+                explanation: "请给我NNN：名词 + 주세요"
+            },
+            {
+                korean: "메뉴판 주세요.",
+                meaning: "请给我菜单。",
+                explanation: "请给我NNN：名词 + 주세요"
+            },
+            
+            // 有NNN：有收音 + 이 있어요 / 没有收音 + 가 있어요
+            {
+                korean: "시간이 있어요.",
+                meaning: "有时间。",
+                explanation: "有NNN：有收音 + 이 있어요"
+            },
+            {
+                korean: "친구가 있어요?",
+                meaning: "有朋友吗？",
+                explanation: "有NNN：没有收音 + 가 있어요（疑问句）"
+            },
+            {
+                korean: "돈이 있어요.",
+                meaning: "有钱。",
+                explanation: "有NNN：有收音 + 이 있어요"
+            },
+            
+            // 没有NNN：有收音 + 이 없어요 / 没有收音 + 가 없어요
+            {
+                korean: "돈이 없어요.",
+                meaning: "没有钱。",
+                explanation: "没有NNN：有收音 + 이 없어요"
+            },
+            {
+                korean: "음식이 없어요?",
+                meaning: "没有食物吗？",
+                explanation: "没有NNN：有收音 + 이 없어요（疑问句）"
+            },
+            {
+                korean: "시간이 없어요.",
+                meaning: "没有时间。",
+                explanation: "没有NNN：有收音 + 이 없어요"
+            },
+            
+            // 我是NNN：有收音 + 이에요 / 没有收音 + 예요
+            {
+                korean: "저는 선생님이에요.",
+                meaning: "我是老师。",
+                explanation: "我是NNN：有收音 + 이에요"
+            },
+            {
+                korean: "저는 한국 사람이에요.",
+                meaning: "我是韩国人。",
+                explanation: "我是NNN：有收音 + 이에요"
+            },
+            
+            // 不要VVV：动词词干 + 지마
+            {
+                korean: "걱정하지 마.",
+                meaning: "不要担心。",
+                explanation: "不要VVV：动词词干 + 지마"
+            },
+            {
+                korean: "울지 마.",
+                meaning: "不要哭。",
+                explanation: "不要VVV：动词词干 + 지마"
+            },
+            
+            // 去NNN：地点 + 에 가요
+            {
+                korean: "도서관에 가요.",
+                meaning: "去图书馆。",
+                explanation: "去NNN：地点 + 에 가요"
+            },
+            {
+                korean: "학교에 가요.",
+                meaning: "去学校。",
+                explanation: "去NNN：地点 + 에 가요"
+            },
+            
+            // 在VVV：动词词干 + 고 있어요
+            {
+                korean: "지금 공부하고 있어요.",
+                meaning: "正在学习。",
+                explanation: "在VVV：动词词干 + 고 있어요"
+            },
+            {
+                korean: "텔레비전을 보고 있어요.",
+                meaning: "正在看电视。",
+                explanation: "在VVV：动词词干 + 고 있어요"
+            }
+        ];
+
+        // 游戏状态
+        let gameState = {
+            currentSentence: {},
+            correctMeaning: '',
+            meaningOptions: [],
+            score: 0,
+            correctCount: 0,
+            wrongCount: 0,
+            questionCount: 0,
+            answered: false,
+            recentSentences: [] // 避免重复出现相同的句子
+        };
+
+        // DOM元素
+        const koreanSentenceEl = document.getElementById('koreanSentence');
+        const optionsContainerEl = document.getElementById('optionsContainer');
+        const feedbackEl = document.getElementById('feedback');
+        const nextBtn = document.getElementById('nextBtn');
+        const explanationEl = document.getElementById('explanation');
+        const scoreEl = document.getElementById('score');
+        const correctCountEl = document.getElementById('correctCount');
+        const wrongCountEl = document.getElementById('wrongCount');
+        const questionCountEl = document.getElementById('questionCount');
+        const speakerBtn = document.getElementById('speakerBtn');
+
+        // 语音合成函数
+        function speakKorean(text) {
+            if (!('speechSynthesis' in window)) {
+                alert('您的浏览器不支持语音合成功能，请使用现代浏览器如Chrome、Edge或Firefox');
+                return;
+            }
+
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'ko-KR';
+            utterance.rate = 0.9;
+            utterance.pitch = 1.0;
+            
+            speakerBtn.classList.add('playing');
+            
+            utterance.onend = function() {
+                speakerBtn.classList.remove('playing');
+            };
+            
+            utterance.onerror = function(event) {
+                console.error('语音合成错误:', event);
+                speakerBtn.classList.remove('playing');
+            };
+            
+            speechSynthesis.speak(utterance);
+        }
+
+        // 获取随机韩语句子（避免重复）
+        function getRandomKoreanSentence() {
+            // 过滤掉最近3题中使用过的句子
+            const availableSentences = koreanSentences.filter(sentence => 
+                !gameState.recentSentences.includes(sentence.korean)
+            );
+            
+            // 如果没有可用句子，使用完整句子库
+            const finalSentencePool = availableSentences.length > 0 ? availableSentences : koreanSentences;
+            
+            return finalSentencePool[Math.floor(Math.random() * finalSentencePool.length)];
+        }
+
+        // 生成词义干扰项
+        function generateMeaningDistractors(correctMeaning) {
+            const distractors = [];
+            const allMeanings = koreanSentences.map(sentence => sentence.meaning);
+            const uniqueMeanings = [...new Set(allMeanings)];
+            
+            while (distractors.length < 2) {
+                const randomIndex = Math.floor(Math.random() * uniqueMeanings.length);
+                const randomMeaning = uniqueMeanings[randomIndex];
+                
+                if (randomMeaning !== correctMeaning && 
+                    !distractors.includes(randomMeaning)) {
+                    distractors.push(randomMeaning);
+                }
+            }
+            
+            return distractors;
+        }
+
+        // 生成新题目
+        function generateQuestion() {
+            gameState.answered = false;
+            gameState.questionCount++;
+            
+            // 获取随机韩语句子（避免重复）
+            gameState.currentSentence = getRandomKoreanSentence();
+            
+            // 将当前句子添加到最近使用列表
+            gameState.recentSentences.push(gameState.currentSentence.korean);
+            
+            // 保持最近使用列表最多包含3个句子
+            if (gameState.recentSentences.length > 3) {
+                gameState.recentSentences.shift(); // 移除最旧的句子
+            }
+            
+            koreanSentenceEl.textContent = gameState.currentSentence.korean;
+            gameState.correctMeaning = gameState.currentSentence.meaning;
+            
+            // 生成词义干扰项
+            const meaningDistractors = generateMeaningDistractors(gameState.correctMeaning);
+            
+            // 组合词义选项
+            gameState.meaningOptions = [
+                gameState.correctMeaning, 
+                ...meaningDistractors
+            ];
+            
+            // 随机排序选项
+            shuffleArray(gameState.meaningOptions);
+            
+            // 更新选项显示
+            updateOptions();
+            
+            // 重置反馈
+            feedbackEl.textContent = '';
+            feedbackEl.className = 'feedback';
+            explanationEl.textContent = '提示：请根据韩语句子选择正确的中文翻译';
+            
+            // 隐藏下一题按钮
+            nextBtn.style.display = 'none';
+            
+            // 更新统计信息
+            updateStats();
+        }
+
+        // 数组随机排序
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        // 更新选项显示
+        function updateOptions() {
+            optionsContainerEl.innerHTML = '';
+            
+            gameState.meaningOptions.forEach((option, index) => {
+                const button = document.createElement('div');
+                button.className = 'option';
+                button.textContent = `${String.fromCharCode(65 + index)}. ${option}`;
+                button.onclick = () => checkAnswer(option);
+                optionsContainerEl.appendChild(button);
+            });
+        }
+
+        // 检查答案
+        function checkAnswer(selectedAnswer) {
+            if (gameState.answered) return;
+            
+            gameState.answered = true;
+            const buttons = document.querySelectorAll('.option');
+            let isCorrect = false;
+            
+            buttons.forEach(button => {
+                const buttonAnswer = button.textContent.split('. ')[1];
+                
+                if (buttonAnswer === gameState.correctMeaning) {
+                    button.classList.add('correct');
+                }
+                
+                if (buttonAnswer === selectedAnswer) {
+                    if (selectedAnswer === gameState.correctMeaning) {
+                        button.classList.add('correct');
+                        isCorrect = true;
+                    } else {
+                        button.classList.add('incorrect');
+                    }
+                }
+            });
+            
+            if (isCorrect) {
+                feedbackEl.textContent = '✓ 正确！';
+                feedbackEl.className = 'feedback correct-feedback';
+                gameState.score += 10;
+                gameState.correctCount++;
+                nextBtn.style.display = 'block';
+                
+                explanationEl.innerHTML = `
+                    <strong>句子解析：</strong><br>
+                    韩语句子: ${gameState.currentSentence.korean}<br>
+                    中文翻译: ${gameState.currentSentence.meaning}<br>
+                    语法点: ${gameState.currentSentence.explanation}
+                `;
+            } else {
+                feedbackEl.textContent = '✗ 错误！';
+                feedbackEl.className = 'feedback incorrect-feedback';
+                gameState.wrongCount++;
+                nextBtn.style.display = 'block';
+                
+                explanationEl.innerHTML = `
+                    <strong>正确答案：${gameState.correctMeaning}</strong><br>
+                    语法点: ${gameState.currentSentence.explanation}<br>
+                    请记住这个翻译，继续努力！
+                `;
+            }
+            
+            updateStats();
+        }
+
+        // 更新统计信息
+        function updateStats() {
+            scoreEl.textContent = gameState.score;
+            correctCountEl.textContent = gameState.correctCount;
+            wrongCountEl.textContent = gameState.wrongCount;
+            questionCountEl.textContent = gameState.questionCount;
+        }
+
+        // 初始化游戏
+        function initGame() {
+            generateQuestion();
+            
+            nextBtn.onclick = generateQuestion;
+            
+            // 添加喇叭按钮点击事件
+            speakerBtn.onclick = function() {
+                speechSynthesis.cancel();
+                
+                // 播放当前句子的发音
+                speakKorean(gameState.currentSentence.korean);
+            };
+        }
+
+        // 页面加载时开始游戏
+        window.onload = initGame;
+    </script>
+</body>
+</html>
